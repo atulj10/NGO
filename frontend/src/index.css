@@ -70,10 +70,31 @@ body {
 }
 
 /* ------------------------------------------------------------------ */
-/* Join Us: vertical organic image slits (bars match section colour)   */
+/* Text used as an image mask (photo clipped inside the letterforms)   */
 /* ------------------------------------------------------------------ */
-.join-bar {
-  background-color: var(--color-orange);
+.text-mask {
+  background-size: cover;
+  background-position: center;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+@supports not (background-clip: text) {
+  .text-mask {
+    background-image: none;
+    color: var(--color-white);
+    -webkit-text-fill-color: var(--color-white);
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Outlined (hollow) display text                                     */
+/* ------------------------------------------------------------------ */
+.text-outline-white {
+  color: transparent;
+  -webkit-text-stroke: 1px var(--color-white);
 }
 
 /* ------------------------------------------------------------------ */

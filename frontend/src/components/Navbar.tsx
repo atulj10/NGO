@@ -32,23 +32,23 @@ export default function Navbar() {
   };
 
   return (
-    <header
-      className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${
-        scrolled || open ? "bg-off-white/90" : "bg-transparent"
-      } ${scrolled && !open ? "border-b border-black/10" : "border-b border-transparent"}`}
-    >
+    <header className="fixed inset-x-0 top-0 z-50 px-4 sm:px-6 lg:px-10">
       <nav
         aria-label="Primary"
-        className="mx-auto flex h-20 max-w-[1400px] items-center justify-between px-4 sm:px-6 lg:px-10"
+        className={`mx-auto mt-3 flex h-16 max-w-[1400px] items-center justify-between rounded-full px-4 transition-colors duration-300 sm:px-6 ${
+          scrolled || open ? "bg-black/50" : "bg-transparent"
+        }`}
       >
-        <Logo />
+        <Logo className={scrolled ? "text-white" : "text-black"} />
 
         <ul className="hidden items-center gap-8 lg:flex">
           {siteConfig.navigation.map((item) => (
             <li key={item.label}>
               <a
                 href={`#${item.target}`}
-                className="text-[0.72rem] font-semibold tracking-[0.18em] text-black/80 transition-colors hover:text-black"
+                className={`text-[0.72rem] font-semibold tracking-[0.18em] transition-colors hover:text-orange ${
+                  scrolled ? "text-white/85" : "text-black/80"
+                }`}
               >
                 {item.label}
               </a>
@@ -60,7 +60,9 @@ export default function Navbar() {
           <button
             type="button"
             aria-label="Select language"
-            className="grid size-10 place-items-center rounded-full text-black transition-colors hover:bg-black/5"
+            className={`grid size-10 place-items-center rounded-full transition-colors hover:bg-white/10 ${
+              scrolled ? "text-white" : "text-black"
+            }`}
           >
             <Globe className="size-5" />
           </button>
@@ -78,7 +80,11 @@ export default function Navbar() {
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
             onClick={() => setOpen((value) => !value)}
-            className="grid size-10 place-items-center rounded-full border border-black/15 text-black lg:hidden"
+            className={`grid size-10 place-items-center rounded-full border transition-colors ${
+              scrolled
+                ? "border-white/30 text-white"
+                : "border-black/15 text-black"
+            } lg:hidden`}
           >
             {open ? <X className="size-5" /> : <Menu className="size-5" />}
           </button>
@@ -92,7 +98,7 @@ export default function Navbar() {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="overflow-hidden border-t border-black/10 bg-off-white lg:hidden"
+            className="mx-auto mt-2 max-w-[1400px] overflow-hidden rounded-b-3xl bg-off-white lg:hidden"
           >
             <ul className="flex flex-col gap-1 px-6 pb-8 pt-4">
               {siteConfig.navigation.map((item, index) => (

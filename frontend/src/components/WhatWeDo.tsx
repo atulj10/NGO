@@ -34,7 +34,6 @@ export default function WhatWeDo() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "0px 0px -60px 0px" }}
               transition={{ duration: 0.6, delay: index * 0.12, ease: "easeOut" }}
-              whileHover={{ y: -6, scale: 1.01 }}
               className="group relative flex min-h-[30rem] flex-col justify-end overflow-hidden rounded-3xl bg-black md:min-h-[34rem]"
             >
               <img

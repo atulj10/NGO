@@ -3,8 +3,10 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Check } from "lucide-react";
 import { siteConfig } from "../data/content";
 
+const MASK_ID = "wave-mask";
+
 export default function JoinUs() {
-  const { eyebrow, heading, description, image, maskBars, newsletter } =
+  const { eyebrow, heading, description, image, waveBars, newsletter } =
     siteConfig.joinUs;
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
@@ -15,8 +17,6 @@ export default function JoinUs() {
     setSubmitted(true);
     setEmail("");
   };
-
-  const barCount = maskBars.length;
 
   return (
     <section id="join" className="bg-orange px-4 py-28 sm:px-6 lg:px-10 lg:py-36">
@@ -38,29 +38,37 @@ export default function JoinUs() {
           transition={{ duration: 0.7, ease: "easeOut" }}
           className="relative mt-8 h-56 w-full max-w-2xl overflow-hidden rounded-3xl sm:h-72 lg:h-80"
         >
-          <img
-            src={image}
-            alt="People working together in a Voices United workshop"
-            loading="lazy"
-            className="absolute inset-0 h-full w-full object-cover"
-          />
-          {maskBars.map((bar, index) => (
-            <motion.span
-              key={index}
-              aria-hidden="true"
-              initial={{ scaleY: 0 }}
-              whileInView={{ scaleY: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.05 * index, ease: "easeOut" }}
-              className="join-bar absolute rounded-full"
-              style={{
-                left: `${(index / barCount) * 100 + 2}%`,
-                top: `${bar.top}%`,
-                height: `${bar.height}%`,
-                width: `${bar.width}%`,
-              }}
+          <svg
+            viewBox="0 0 100 100"
+            preserveAspectRatio="xMidYMid slice"
+            className="h-full w-full"
+          >
+            <defs>
+              <mask id={MASK_ID}>
+                <rect width="100" height="100" fill="black" />
+                {waveBars.map((bar) => (
+                  <rect
+                    key={bar.x}
+                    x={bar.x}
+                    y={bar.y}
+                    width={bar.width}
+                    height={bar.height}
+                    rx={bar.rx}
+                    fill="white"
+                  />
+                ))}
+              </mask>
+            </defs>
+            <image
+              href={image}
+              x="0"
+              y="0"
+              width="100"
+              height="100"
+              preserveAspectRatio="xMidYMid slice"
+              mask={`url(#${MASK_ID})`}
             />
-          ))}
+          </svg>
         </motion.div>
 
         <motion.h2

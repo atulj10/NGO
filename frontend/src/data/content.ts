@@ -116,16 +116,14 @@ export const siteConfig = {
       "One email, twice a month. Stories, campaigns, and ways to act — straight from the field.",
     image:
       "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1600&q=80",
-    maskBars: [
-      { top: 16, height: 68, width: 4 },
-      { top: 8, height: 84, width: 4 },
-      { top: 24, height: 52, width: 3.5 },
-      { top: 4, height: 92, width: 4.5 },
-      { top: 14, height: 72, width: 4 },
-      { top: 6, height: 88, width: 3.5 },
-      { top: 22, height: 56, width: 4 },
-      { top: 10, height: 80, width: 4.5 },
-      { top: 18, height: 64, width: 3.5 },
+    waveBars: [
+      { x: 21, y: 43, width: 6, height: 14, rx: 3 },
+      { x: 41, y: 33, width: 6, height: 34, rx: 3 },
+      { x: 31, y: 37, width: 6, height: 26, rx: 3 },
+      { x: 51, y: 30, width: 6, height: 40, rx: 3 },
+      { x: 71, y: 37, width: 6, height: 26, rx: 3 },
+      { x: 61, y: 33, width: 6, height: 34, rx: 3 },
+      { x: 81, y: 43, width: 6, height: 14, rx: 3 },
     ],
     newsletter: {
       placeholder: "Your email...",
@@ -168,7 +166,11 @@ export const siteConfig = {
     ],
     copyright: "All Rights Reserved 2025",
     socials: [
-      { name: "Instagram", icon: "instagram", url: "https://www.instagram.com" },
+      {
+        name: "Instagram",
+        icon: "instagram",
+        url: "https://www.instagram.com",
+      },
       { name: "X (Twitter)", icon: "twitter", url: "https://www.x.com" },
       { name: "Facebook", icon: "facebook", url: "https://www.facebook.com" },
       { name: "LinkedIn", icon: "linkedin", url: "https://www.linkedin.com" },
