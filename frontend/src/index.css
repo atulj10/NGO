@@ -1,1 +1,105 @@
 @import "tailwindcss";
+
+@theme {
+  --color-orange: #ff6845;
+  --color-orange-dark: #d94f2e;
+  --color-off-white: #f5f4ed;
+  --color-black: #111111;
+  --color-white: #ffffff;
+
+  --font-display: "Bebas Neue", "Oswald", "Arial Narrow", sans-serif;
+  --font-body: "Inter", "Helvetica Neue", Arial, sans-serif;
+}
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5.5rem;
+}
+
+html,
+body {
+  overflow-x: clip;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  background-color: var(--color-off-white);
+  color: var(--color-black);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--color-orange);
+  color: var(--color-white);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-orange);
+  outline-offset: 3px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Hero: photograph clipped inside the letterforms                     */
+/* ------------------------------------------------------------------ */
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(3.5rem, 15vw, 15rem);
+  line-height: 0.84;
+  letter-spacing: 0.015em;
+  background-image: var(--hero-image);
+  background-size: cover;
+  background-position: center;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+@supports not (background-clip: text) {
+  .hero-title {
+    background-image: none;
+    color: var(--color-black);
+    -webkit-text-fill-color: var(--color-black);
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Join Us: vertical organic image slits (bars match section colour)   */
+/* ------------------------------------------------------------------ */
+.join-bar {
+  background-color: var(--color-orange);
+}
+
+/* ------------------------------------------------------------------ */
+/* Footer: large low-contrast statement                                */
+/* ------------------------------------------------------------------ */
+.footer-statement {
+  font-family: var(--font-display);
+  font-size: clamp(2.6rem, 8.5vw, 8.5rem);
+  line-height: 0.92;
+  letter-spacing: 0.02em;
+  color: var(--color-orange-dark);
+}
+
+/* ------------------------------------------------------------------ */
+/* Reduced motion                                                      */
+/* ------------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
