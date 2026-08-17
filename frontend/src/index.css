@@ -124,3 +124,19 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ------------------------------------------------------------------ */
+/* Admin: select element styling                                       */
+/* ------------------------------------------------------------------ */
+select {
+  appearance: auto;
+  background-image: none;
+}
+
+/* ------------------------------------------------------------------ */
+/* Admin: date input styling                                           */
+/* ------------------------------------------------------------------ */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0.5;
+  cursor: pointer;
+}
