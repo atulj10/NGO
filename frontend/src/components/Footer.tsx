@@ -1,4 +1,5 @@
 import { useEffect, useState, type SVGProps } from "react";
+import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowUp } from "lucide-react";
 import { siteConfig } from "../data/content";
@@ -42,6 +43,7 @@ const socialIcons = {
 } as const;
 
 export default function Footer() {
+  const navigate = useNavigate();
   const { tagline, statement, columns, copyright, socials } = siteConfig.footer;
   const [showTop, setShowTop] = useState(false);
 
@@ -88,12 +90,22 @@ export default function Footer() {
               <ul className="mt-5 space-y-3">
                 {column.links.map((link) => (
                   <li key={link.label}>
-                    <a
-                      href={link.url}
-                      className="text-sm text-white/85 transition-colors hover:text-white"
-                    >
-                      {link.label}
-                    </a>
+                    {link.url.startsWith("/") ? (
+                      <button
+                        type="button"
+                        onClick={() => navigate(link.url)}
+                        className="text-sm text-white/85 transition-colors hover:text-white"
+                      >
+                        {link.label}
+                      </button>
+                    ) : (
+                      <a
+                        href={link.url}
+                        className="text-sm text-white/85 transition-colors hover:text-white"
+                      >
+                        {link.label}
+                      </a>
+                    )}
                   </li>
                 ))}
               </ul>

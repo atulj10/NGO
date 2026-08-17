@@ -7,6 +7,7 @@ import Objectives from "./components/Objectives";
 import WhatWeDo from "./components/WhatWeDo";
 import JoinUs from "./components/JoinUs";
 import Footer from "./components/Footer";
+import Contact from "./pages/Contact";
 import AdminLayout from "./components/admin/AdminLayout";
 import ProtectedRoute from "./components/admin/ProtectedRoute";
 import AdminLogin from "./pages/admin/AdminLogin";
@@ -34,6 +35,14 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={<PublicPage />} />
+
+      <Route path="/contact" element={
+        <MotionConfig reducedMotion="user">
+          <Navbar />
+          <Contact />
+          <Footer />
+        </MotionConfig>
+      } />
 
       <Route path="/admin/login" element={<AdminLogin />} />
 

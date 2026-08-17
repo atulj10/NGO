@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { Globe, Menu, X } from "lucide-react";
 import { siteConfig } from "../data/content";
@@ -9,6 +10,7 @@ function scrollToId(id: string) {
 }
 
 export default function Navbar() {
+  const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -28,7 +30,11 @@ export default function Navbar() {
 
   const handleNavClick = (target: string) => {
     setOpen(false);
-    setTimeout(() => scrollToId(target), open ? 300 : 0);
+    if (target.startsWith("/")) {
+      navigate(target);
+    } else {
+      setTimeout(() => scrollToId(target), open ? 300 : 0);
+    }
   };
 
   return (
@@ -44,14 +50,26 @@ export default function Navbar() {
         <ul className="hidden items-center gap-8 lg:flex">
           {siteConfig.navigation.map((item) => (
             <li key={item.label}>
-              <a
-                href={`#${item.target}`}
-                className={`text-[0.72rem] font-semibold tracking-[0.18em] transition-colors hover:text-orange ${
-                  scrolled ? "text-white/85" : "text-black/80"
-                }`}
-              >
-                {item.label}
-              </a>
+              {item.target.startsWith("/") ? (
+                <button
+                  type="button"
+                  onClick={() => handleNavClick(item.target)}
+                  className={`text-[0.72rem] font-semibold tracking-[0.18em] transition-colors hover:text-orange ${
+                    scrolled ? "text-white/85" : "text-black/80"
+                  }`}
+                >
+                  {item.label}
+                </button>
+              ) : (
+                <a
+                  href={`#${item.target}`}
+                  className={`text-[0.72rem] font-semibold tracking-[0.18em] transition-colors hover:text-orange ${
+                    scrolled ? "text-white/85" : "text-black/80"
+                  }`}
+                >
+                  {item.label}
+                </a>
+              )}
             </li>
           ))}
         </ul>
@@ -108,13 +126,23 @@ export default function Navbar() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.05 * index, duration: 0.25 }}
                 >
-                  <a
-                    href={`#${item.target}`}
-                    onClick={() => handleNavClick(item.target)}
-                    className="block py-3 font-display text-4xl tracking-wide text-black/85 transition-colors hover:text-orange"
-                  >
-                    {item.label}
-                  </a>
+                  {item.target.startsWith("/") ? (
+                    <button
+                      type="button"
+                      onClick={() => handleNavClick(item.target)}
+                      className="block w-full py-3 text-left font-display text-4xl tracking-wide text-black/85 transition-colors hover:text-orange"
+                    >
+                      {item.label}
+                    </button>
+                  ) : (
+                    <a
+                      href={`#${item.target}`}
+                      onClick={() => handleNavClick(item.target)}
+                      className="block py-3 font-display text-4xl tracking-wide text-black/85 transition-colors hover:text-orange"
+                    >
+                      {item.label}
+                    </a>
+                  )}
                 </motion.li>
               ))}
               <motion.li

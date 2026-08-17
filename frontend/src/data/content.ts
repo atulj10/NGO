@@ -21,7 +21,7 @@ export const siteConfig = {
     { label: "PROGRAMS", target: "objectives" },
     { label: "BLOG & ADVOCACY", target: "what-we-do" },
     { label: "STORIES", target: "join" },
-    { label: "CONTACT", target: "contact" },
+    { label: "CONTACT", target: "/contact" },
   ],
 
   hero: {
@@ -139,10 +139,10 @@ export const siteConfig = {
       {
         heading: "ORGANIZATION",
         links: [
-          { label: "Staff", url: "#contact" },
+          { label: "Staff", url: "/contact" },
           { label: "Community", url: "#impact" },
-          { label: "Career", url: "#contact" },
-          { label: "Contact Us", url: "#contact" },
+          { label: "Career", url: "/contact" },
+          { label: "Contact Us", url: "/contact" },
         ],
       },
       {
@@ -151,7 +151,7 @@ export const siteConfig = {
           { label: "Our Mentors", url: "#what-we-do" },
           { label: "Become A Speaker", url: "#join" },
           { label: "Request Your Story", url: "#join" },
-          { label: "Private Engagements", url: "#contact" },
+          { label: "Private Engagements", url: "/contact" },
         ],
       },
       {
@@ -159,7 +159,7 @@ export const siteConfig = {
         links: [
           { label: "Donate", url: "#join" },
           { label: "Become A Member", url: "#join" },
-          { label: "Sponsorship", url: "#contact" },
+          { label: "Sponsorship", url: "/contact" },
           { label: "Become A Volunteer", url: "#join" },
         ],
       },
