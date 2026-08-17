@@ -34,10 +34,10 @@ export default function AdminHeader() {
   return (
     <header className="hidden items-center justify-between border-b border-gray-100 bg-white px-8 py-5 lg:flex">
       <div>
-        <h1 className="font-display text-2xl font-bold text-black">
+        <h1 className="font-display text-2xl  text-black">
           {page.title}
         </h1>
-        <p className="mt-0.5 text-sm text-gray-500">{page.description}</p>
+        {/* <p className="mt-0.5 text-sm text-gray-500">{page.description}</p> */}
       </div>
 
       <DropdownMenu.Root>

@@ -6,6 +6,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { logout } from "../../utils/auth";
+import { siteConfig } from "../../data/content";
 
 const navItems = [
   { to: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -22,14 +23,16 @@ export default function AdminSidebar() {
   }
 
   return (
-    <aside className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-40 lg:flex lg:w-64 lg:flex-col border-r border-gray-200 bg-off-white">
+    <aside className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-40 lg:flex lg:w-64 lg:flex-col border-r border-gray-200 bg-white">
       <div className="flex items-center gap-3 px-6 py-6">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange font-display text-lg font-bold text-white">
-          VU
-        </div>
+        <img
+          src="/assets/Logo.png"
+          alt=""
+          className="h-10 w-10 rounded-xl object-cover"
+        />
         <div>
-          <p className="font-display text-sm font-bold tracking-wider text-black">
-            VOICES UNITED
+          <p className="text-xs font-bold tracking-wider text-black">
+            {siteConfig.organizationName}
           </p>
           <p className="text-xs text-gray-500">Admin Portal</p>
         </div>

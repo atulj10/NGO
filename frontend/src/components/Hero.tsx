@@ -22,7 +22,7 @@ export default function Hero() {
         style={heroStyle}
       >
         {titleLines.map((line) => (
-          <span key={line} className="block">
+          <span key={line} className="block text-5xl font-bold sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl">
             {line}
           </span>
         ))}

@@ -9,7 +9,7 @@ export default function AdminLayout() {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   return (
-    <div className="flex h-screen bg-off-white">
+    <div className="flex h-screen bg-white">
       <AdminSidebar />
 
       <MobileAdminDrawer

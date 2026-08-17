@@ -1,4 +1,5 @@
 import { Menu, User } from "lucide-react";
+import { siteConfig } from "../../data/content";
 
 interface MobileAdminHeaderProps {
   onMenuToggle: () => void;
@@ -16,8 +17,8 @@ export default function MobileAdminHeader({
       >
         <Menu size={20} />
       </button>
-      <p className="font-display text-sm font-bold tracking-wider text-black">
-        VOICES UNITED
+      <p className="max-w-[180px] truncate font-display text-sm font-bold tracking-wider text-black">
+        {siteConfig.organizationName}
       </p>
       <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange/10 text-orange">
         <User size={18} />

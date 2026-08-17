@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Eye, EyeOff } from "lucide-react";
 import { login, isAuthenticated } from "../../utils/auth";
 import { adminCredentials } from "../../data/adminData";
+import { siteConfig } from "../../data/content";
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("");
@@ -36,7 +37,7 @@ export default function AdminLogin() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-off-white px-4">
+    <div className="flex min-h-screen items-center justify-center bg-white px-4">
       <div className="w-full max-w-md">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -44,11 +45,13 @@ export default function AdminLogin() {
           transition={{ duration: 0.5 }}
           className="text-center"
         >
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-orange font-display text-2xl font-bold text-white">
-            VU
-          </div>
-          <h1 className="mt-6 font-display text-3xl font-bold tracking-wider text-black">
-            VOICES UNITED
+          <img
+            src="/assets/Logo.png"
+            alt=""
+            className="mx-auto h-16 w-16 rounded-2xl object-cover"
+          />
+          <h1 className="mt-6 font-display text-2xl font-bold tracking-wider text-black">
+            {siteConfig.organizationName}
           </h1>
           <p className="mt-1 text-sm font-medium uppercase tracking-widest text-gray-400">
             Admin Portal
@@ -137,7 +140,7 @@ export default function AdminLogin() {
         </motion.div>
 
         <p className="mt-6 text-center text-xs text-gray-400">
-          © 2026 Voices United. All rights reserved.
+          © 2026 {siteConfig.organizationName}. All rights reserved.
         </p>
       </div>
     </div>

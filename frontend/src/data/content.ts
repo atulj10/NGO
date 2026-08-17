@@ -1,5 +1,5 @@
 export const siteConfig = {
-  organizationName: "VOICES UNITED",
+  organizationName: "HEALTH EDUCATION AND LIVELIHOOD PROMOTION SOCIETY",
 
   logo: {
     type: "temporary",
@@ -25,7 +25,7 @@ export const siteConfig = {
   ],
 
   hero: {
-    titleLines: ["VOICES", "UNITED"],
+    titleLines: ["HEALTH EDUCATION AND", "LIVELIHOOD PROMOTION SOCIETY"],
     image:
       "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1800&q=80",
     primaryCta: { label: "DONATE", target: "join" },
@@ -36,7 +36,7 @@ export const siteConfig = {
     heading: "OUR IMPACT IN ACTION",
     accentWord: "IMPACT",
     description:
-      "Voices United supports grassroots leaders, educators, and advocates who fight for equity, dignity, and justice.",
+      "Health Education and Livelihood Promotion Society supports grassroots leaders, educators, and advocates who fight for equity, dignity, and justice.",
     stats: [
       {
         label: "STORIES SHARED",
@@ -111,7 +111,7 @@ export const siteConfig = {
 
   joinUs: {
     eyebrow: "BECOME PART OF THE MOVEMENT",
-    heading: "JOIN THE VOICES UNITED",
+    heading: "JOIN THE MOVEMENT",
     description:
       "One email, twice a month. Stories, campaigns, and ways to act — straight from the field.",
     image:
@@ -164,7 +164,7 @@ export const siteConfig = {
         ],
       },
     ],
-    copyright: "All Rights Reserved 2025",
+    copyright: "All Rights Reserved 2026",
     socials: [
       {
         name: "Instagram",

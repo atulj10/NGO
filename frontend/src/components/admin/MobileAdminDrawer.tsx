@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { logout } from "../../utils/auth";
 import { AnimatePresence, motion } from "framer-motion";
+import { siteConfig } from "../../data/content";
 
 const navItems = [
   { to: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -51,16 +52,18 @@ export default function MobileAdminDrawer({
             animate={{ x: 0 }}
             exit={{ x: -288 }}
             transition={{ type: "spring", damping: 30, stiffness: 300 }}
-            className="fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-gray-200 bg-off-white lg:hidden"
+            className="fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-gray-200 bg-white lg:hidden"
           >
             <div className="flex items-center justify-between px-6 py-6">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange font-display text-lg font-bold text-white">
-                  VU
-                </div>
+                <img
+                  src="/assets/Logo.png"
+                  alt=""
+                  className="h-10 w-10 rounded-xl object-cover"
+                />
                 <div>
-                  <p className="font-display text-sm font-bold tracking-wider text-black">
-                    VOICES UNITED
+                  <p className="text-xs font-bold tracking-wider text-black">
+                    {siteConfig.organizationName}
                   </p>
                   <p className="text-xs text-gray-500">Admin Portal</p>
                 </div>
