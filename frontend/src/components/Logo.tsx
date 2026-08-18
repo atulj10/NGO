@@ -13,7 +13,7 @@ export default function Logo({ className = "", compact = false }: LogoProps) {
       className={`inline-flex items-center gap-2.5 ${className}`}
     >
       <img
-        src="/assets/Logo.png"
+        src="/assets/Logo.webp"
         alt=""
         className="size-9 rounded-full object-cover"
       />

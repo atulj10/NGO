@@ -25,6 +25,7 @@ export default function Objectives() {
           key={active.image}
           src={active.image}
           alt=""
+          decoding="async"
           initial={{ opacity: 0, scale: 1.05 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0 }}

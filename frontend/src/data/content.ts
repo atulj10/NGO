@@ -26,7 +26,7 @@ export const siteConfig = {
 
   hero: {
     titleLines: ["HEALTH EDUCATION AND", "LIVELIHOOD PROMOTION SOCIETY"],
-    image: "/assets/masked_image_hero.jpg",
+    image: "/assets/masked_image_hero.webp",
     primaryCta: { label: "DONATE", target: "join" },
     secondaryCta: { label: "TELL MY STORY", target: "contact" },
   },
@@ -65,17 +65,17 @@ export const siteConfig = {
     {
       title: "SADHNA",
       image:
-        "/assets/child-holding-red-rubber-heart.jpg",
+        "/assets/child-holding-red-rubber-heart.webp",
     },
     {
       title: "SEWA",
       image:
-        "/assets/hands-trees-growing-seedlings.jpg",
+        "/assets/hands-trees-growing-seedlings.webp",
     },
     {
       title: "SATSANG",
       image:
-        "/assets/Kids_in_uniform.jpg",
+        "/assets/Kids_in_uniform.webp",
     },
   ],
 
@@ -89,7 +89,7 @@ export const siteConfig = {
         description:
           "We train people to be on their own — with dignity, safety, and reach.",
         image:
-          "/assets/indian-engineer-work-building-site.jpg",
+          "/assets/indian-engineer-work-building-site.webp",
       },
       {
         title: "CREATING SPACES TO LEARN",
@@ -114,7 +114,7 @@ export const siteConfig = {
     description:
       "One email, twice a month. Stories, campaigns, and ways to act — straight from the field.",
     image:
-      "/assets/volunteer.jpg",
+      "/assets/volunteer.webp",
     waveBars: [
       { x: 21, y: 43, width: 6, height: 14, rx: 3 },
       { x: 41, y: 33, width: 6, height: 34, rx: 3 },

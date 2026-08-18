@@ -26,7 +26,7 @@ export default function AdminSidebar() {
     <aside className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-40 lg:flex lg:w-64 lg:flex-col border-r border-gray-200 bg-white">
       <div className="flex items-center gap-3 px-6 py-6">
         <img
-          src="/assets/Logo.png"
+          src="/assets/Logo.webp"
           alt=""
           className="h-10 w-10 rounded-xl object-cover"
         />

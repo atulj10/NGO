@@ -16,9 +16,10 @@ export default function Hero() {
     >
       <div className="relative">
         <img
-          src="/assets/hero_background.png"
+          src="/assets/hero_background.webp"
           alt=""
           aria-hidden="true"
+          decoding="async"
           className="absolute inset-0 -top-[135%] h-[250%] w-full object-cover object-bottom select-none pointer-events-none"
         />
         <motion.h1

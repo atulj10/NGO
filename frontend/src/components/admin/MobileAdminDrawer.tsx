@@ -57,7 +57,7 @@ export default function MobileAdminDrawer({
             <div className="flex items-center justify-between px-6 py-6">
               <div className="flex items-center gap-3">
                 <img
-                  src="/assets/Logo.png"
+                  src="/assets/Logo.webp"
                   alt=""
                   className="h-10 w-10 rounded-xl object-cover"
                 />

@@ -46,7 +46,7 @@ export default function AdminLogin() {
           className="text-center"
         >
           <img
-            src="/assets/Logo.png"
+            src="/assets/Logo.webp"
             alt=""
             className="mx-auto h-16 w-16 rounded-2xl object-cover"
           />

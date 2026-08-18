@@ -40,6 +40,7 @@ export default function WhatWeDo() {
                 src={card.image}
                 alt=""
                 loading="lazy"
+                decoding="async"
                 className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-black/20 transition-opacity duration-500 group-hover:opacity-90" />
