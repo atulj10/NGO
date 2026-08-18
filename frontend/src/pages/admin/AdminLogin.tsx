@@ -37,7 +37,7 @@ export default function AdminLogin() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-white px-4">
+    <div className="flex min-h-screen items-center justify-center bg-white px-4" style={{ fontFamily: "var(--font-admin)" }}>
       <div className="w-full max-w-md">
         <motion.div
           initial={{ opacity: 0, y: -20 }}

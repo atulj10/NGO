@@ -9,7 +9,7 @@ export default function AdminLayout() {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   return (
-    <div className="flex h-screen bg-white">
+    <div className="flex h-screen bg-white" style={{ fontFamily: "var(--font-admin)" }}>
       <AdminSidebar />
 
       <MobileAdminDrawer
