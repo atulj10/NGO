@@ -1,5 +1,5 @@
 import * as Dialog from "@radix-ui/react-dialog";
-import { X, Calendar, Clock, MapPin, Tag } from "lucide-react";
+import { X, Calendar, MapPin, Tag } from "lucide-react";
 import { motion } from "framer-motion";
 import type { ScheduleEvent } from "../../data/adminData";
 
@@ -17,14 +17,6 @@ function formatDate(dateStr: string): string {
     month: "long",
     year: "numeric",
   });
-}
-
-function formatTime(timeStr: string): string {
-  const [hours, minutes] = timeStr.split(":");
-  const h = parseInt(hours, 10);
-  const ampm = h >= 12 ? "PM" : "AM";
-  const h12 = h % 12 || 12;
-  return `${h12}:${minutes} ${ampm}`;
 }
 
 export default function EventDetailDialog({
@@ -50,7 +42,7 @@ export default function EventDetailDialog({
             initial={{ opacity: 0, scale: 0.95, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed left-1/2 top-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-3xl border border-gray-100 bg-white p-6 shadow-xl focus:outline-none"
+            className="font-admin fixed left-1/2 top-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-3xl border border-gray-100 bg-white p-6 shadow-xl focus:outline-none"
           >
             <div className="flex items-start justify-between">
               <Dialog.Title className="pr-8 font-display text-xl font-bold text-black">
@@ -70,12 +62,6 @@ export default function EventDetailDialog({
               <div className="flex items-center gap-3 text-sm text-gray-600">
                 <Calendar size={16} className="shrink-0 text-orange" />
                 <span>{formatDate(event.date)}</span>
-              </div>
-              <div className="flex items-center gap-3 text-sm text-gray-600">
-                <Clock size={16} className="shrink-0 text-orange" />
-                <span>
-                  {formatTime(event.startTime)} – {formatTime(event.endTime)}
-                </span>
               </div>
               <div className="flex items-center gap-3 text-sm text-gray-600">
                 <MapPin size={16} className="shrink-0 text-orange" />

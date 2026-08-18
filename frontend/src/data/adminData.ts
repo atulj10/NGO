@@ -47,34 +47,32 @@ export interface ScheduleEvent {
   id: number;
   name: string;
   date: string;
-  startTime: string;
-  endTime: string;
   location: string;
   category: EventCategory;
   description: string;
 }
 
 export const defaultScheduleEvents: ScheduleEvent[] = [
-  { id: 1, name: "Community Health Workshop", date: "2026-08-18", startTime: "10:00", endTime: "12:00", location: "Bengaluru", category: "Workshop", description: "Health awareness and preventive care workshop for local communities." },
-  { id: 2, name: "Women Leadership Program", date: "2026-08-21", startTime: "14:00", endTime: "16:00", location: "Ranchi", category: "Education", description: "Leadership development program for women in rural areas." },
-  { id: 3, name: "Climate Awareness Session", date: "2026-08-25", startTime: "11:30", endTime: "13:00", location: "Delhi", category: "Campaign", description: "Interactive session on climate change and community action." },
-  { id: 4, name: "Child Rights Workshop", date: "2026-08-28", startTime: "09:00", endTime: "11:00", location: "Mumbai", category: "Workshop", description: "Workshop on children's rights and protection mechanisms." },
-  { id: 5, name: "Fundraising Gala", date: "2026-09-01", startTime: "18:00", endTime: "21:00", location: "Delhi", category: "Fundraising", description: "Annual fundraising gala to support education programs." },
-  { id: 6, name: "Community Clean-Up Drive", date: "2026-09-03", startTime: "07:00", endTime: "10:00", location: "Chennai", category: "Community", description: "Neighborhood clean-up and waste management awareness." },
-  { id: 7, name: "Digital Literacy Camp", date: "2026-09-05", startTime: "10:00", endTime: "14:00", location: "Hyderabad", category: "Education", description: "Teaching basic computer and internet skills to underprivileged youth." },
-  { id: 8, name: "Mental Health Awareness", date: "2026-09-08", startTime: "11:00", endTime: "13:00", location: "Pune", category: "Workshop", description: "Community workshop on mental health awareness and support." },
-  { id: 9, name: "Tree Plantation Drive", date: "2026-09-10", startTime: "08:00", endTime: "11:00", location: "Jaipur", category: "Campaign", description: "Large-scale tree plantation event in partnership with local schools." },
-  { id: 10, name: "Women's Safety Workshop", date: "2026-09-12", startTime: "14:00", endTime: "16:00", location: "Lucknow", category: "Workshop", description: "Self-defense and safety awareness workshop for women." },
-  { id: 11, name: "Voter Awareness Campaign", date: "2026-09-15", startTime: "10:00", endTime: "13:00", location: "Kolkata", category: "Campaign", description: "Encouraging voter participation in upcoming elections." },
-  { id: 12, name: "Youth Skill Development", date: "2026-09-18", startTime: "09:00", endTime: "15:00", location: "Ahmedabad", category: "Education", description: "Vocational training and skill development for unemployed youth." },
-  { id: 13, name: "Senior Citizens Meet", date: "2026-09-20", startTime: "16:00", endTime: "18:00", location: "Bengaluru", category: "Community", description: "Community gathering for senior citizens with health check-ups." },
-  { id: 14, name: "Water Conservation Talk", date: "2026-09-22", startTime: "11:00", endTime: "12:30", location: "Chennai", category: "Campaign", description: "Public talk on water conservation and sustainable practices." },
-  { id: 15, name: "Art Therapy Session", date: "2026-09-25", startTime: "14:00", endTime: "16:30", location: "Mumbai", category: "Workshop", description: "Therapeutic art sessions for children from underserved communities." },
-  { id: 16, name: "Annual General Meeting", date: "2026-09-28", startTime: "10:00", endTime: "13:00", location: "Delhi", category: "Other", description: "Annual review and planning meeting for stakeholders." },
-  { id: 17, name: "Blood Donation Camp", date: "2026-10-01", startTime: "09:00", endTime: "17:00", location: "Hyderabad", category: "Community", description: "Community blood donation drive in collaboration with local hospitals." },
-  { id: 18, name: "Education Scholarship Drive", date: "2026-10-05", startTime: "10:00", endTime: "14:00", location: "Ranchi", category: "Fundraising", description: "Fundraising event for educational scholarships." },
-  { id: 19, name: "Eco-Friendly Living Workshop", date: "2026-10-08", startTime: "15:00", endTime: "17:00", location: "Pune", category: "Education", description: "Workshop on sustainable living and reducing carbon footprint." },
-  { id: 20, name: "Cultural Heritage Festival", date: "2026-10-12", startTime: "16:00", endTime: "20:00", location: "Jaipur", category: "Community", description: "Celebrating local cultural heritage through art, music, and dance." },
+  { id: 1, name: "Community Health Workshop", date: "2026-08-18", location: "Bengaluru", category: "Workshop", description: "Health awareness and preventive care workshop for local communities." },
+  { id: 2, name: "Women Leadership Program", date: "2026-08-21", location: "Ranchi", category: "Education", description: "Leadership development program for women in rural areas." },
+  { id: 3, name: "Climate Awareness Session", date: "2026-08-25", location: "Delhi", category: "Campaign", description: "Interactive session on climate change and community action." },
+  { id: 4, name: "Child Rights Workshop", date: "2026-08-28", location: "Mumbai", category: "Workshop", description: "Workshop on children's rights and protection mechanisms." },
+  { id: 5, name: "Fundraising Gala", date: "2026-09-01", location: "Delhi", category: "Fundraising", description: "Annual fundraising gala to support education programs." },
+  { id: 6, name: "Community Clean-Up Drive", date: "2026-09-03", location: "Chennai", category: "Community", description: "Neighborhood clean-up and waste management awareness." },
+  { id: 7, name: "Digital Literacy Camp", date: "2026-09-05", location: "Hyderabad", category: "Education", description: "Teaching basic computer and internet skills to underprivileged youth." },
+  { id: 8, name: "Mental Health Awareness", date: "2026-09-08", location: "Pune", category: "Workshop", description: "Community workshop on mental health awareness and support." },
+  { id: 9, name: "Tree Plantation Drive", date: "2026-09-10", location: "Jaipur", category: "Campaign", description: "Large-scale tree plantation event in partnership with local schools." },
+  { id: 10, name: "Women's Safety Workshop", date: "2026-09-12", location: "Lucknow", category: "Workshop", description: "Self-defense and safety awareness workshop for women." },
+  { id: 11, name: "Voter Awareness Campaign", date: "2026-09-15", location: "Kolkata", category: "Campaign", description: "Encouraging voter participation in upcoming elections." },
+  { id: 12, name: "Youth Skill Development", date: "2026-09-18", location: "Ahmedabad", category: "Education", description: "Vocational training and skill development for unemployed youth." },
+  { id: 13, name: "Senior Citizens Meet", date: "2026-09-20", location: "Bengaluru", category: "Community", description: "Community gathering for senior citizens with health check-ups." },
+  { id: 14, name: "Water Conservation Talk", date: "2026-09-22", location: "Chennai", category: "Campaign", description: "Public talk on water conservation and sustainable practices." },
+  { id: 15, name: "Art Therapy Session", date: "2026-09-25", location: "Mumbai", category: "Workshop", description: "Therapeutic art sessions for children from underserved communities." },
+  { id: 16, name: "Annual General Meeting", date: "2026-09-28", location: "Delhi", category: "Other", description: "Annual review and planning meeting for stakeholders." },
+  { id: 17, name: "Blood Donation Camp", date: "2026-10-01", location: "Hyderabad", category: "Community", description: "Community blood donation drive in collaboration with local hospitals." },
+  { id: 18, name: "Education Scholarship Drive", date: "2026-10-05", location: "Ranchi", category: "Fundraising", description: "Fundraising event for educational scholarships." },
+  { id: 19, name: "Eco-Friendly Living Workshop", date: "2026-10-08", location: "Pune", category: "Education", description: "Workshop on sustainable living and reducing carbon footprint." },
+  { id: 20, name: "Cultural Heritage Festival", date: "2026-10-12", location: "Jaipur", category: "Community", description: "Celebrating local cultural heritage through art, music, and dance." },
 ];
 
 export interface MediaItem {

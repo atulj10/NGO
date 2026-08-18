@@ -191,7 +191,6 @@ export default function Schedule() {
                   <tr className="border-b border-gray-100 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
                     <th className="px-6 py-4">Event</th>
                     <th className="px-6 py-4">Date</th>
-                    <th className="px-6 py-4">Time</th>
                     <th className="px-6 py-4">Location</th>
                     <th className="px-6 py-4">Category</th>
                   </tr>
@@ -211,9 +210,6 @@ export default function Schedule() {
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-500">
                         {formatDate(event.date)}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-500">
-                        {event.startTime}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-500">
                         {event.location}

@@ -17,7 +17,6 @@ interface EventDialogProps {
 interface FormErrors {
   name?: string;
   date?: string;
-  startTime?: string;
   location?: string;
   category?: string;
 }
@@ -25,8 +24,6 @@ interface FormErrors {
 const emptyForm = {
   name: "",
   date: "",
-  startTime: "",
-  endTime: "",
   location: "",
   category: "" as EventCategory | "",
   description: "",
@@ -44,7 +41,6 @@ export default function EventDialog({
     const newErrors: FormErrors = {};
     if (!form.name.trim()) newErrors.name = "Event name is required";
     if (!form.date) newErrors.date = "Date is required";
-    if (!form.startTime) newErrors.startTime = "Start time is required";
     if (!form.location.trim()) newErrors.location = "Location is required";
     if (!form.category) newErrors.category = "Category is required";
     setErrors(newErrors);
@@ -57,8 +53,6 @@ export default function EventDialog({
     onSubmit({
       name: form.name.trim(),
       date: form.date,
-      startTime: form.startTime,
-      endTime: form.endTime || form.startTime,
       location: form.location.trim(),
       category: form.category as EventCategory,
       description: form.description.trim(),
@@ -89,7 +83,7 @@ export default function EventDialog({
             initial={{ opacity: 0, scale: 0.95, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed left-1/2 top-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-3xl border border-gray-100 bg-white p-6 shadow-xl focus:outline-none"
+            className="font-admin fixed left-1/2 top-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-3xl border border-gray-100 bg-white p-6 shadow-xl focus:outline-none"
           >
             <div className="flex items-center justify-between">
               <Dialog.Title className="font-display text-xl font-bold text-black">
@@ -136,40 +130,6 @@ export default function EventDialog({
                 {errors.date && (
                   <p className="mt-1 text-xs text-red-500">{errors.date}</p>
                 )}
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Start Time
-                  </label>
-                  <input
-                    type="time"
-                    value={form.startTime}
-                    onChange={(e) =>
-                      setForm({ ...form, startTime: e.target.value })
-                    }
-                    className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-black outline-none transition focus:border-orange focus:ring-2 focus:ring-orange/20"
-                  />
-                  {errors.startTime && (
-                    <p className="mt-1 text-xs text-red-500">
-                      {errors.startTime}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    End Time
-                  </label>
-                  <input
-                    type="time"
-                    value={form.endTime}
-                    onChange={(e) =>
-                      setForm({ ...form, endTime: e.target.value })
-                    }
-                    className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-black outline-none transition focus:border-orange focus:ring-2 focus:ring-orange/20"
-                  />
-                </div>
               </div>
 
               <div>

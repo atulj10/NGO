@@ -42,7 +42,7 @@ export default function ReportDetailDialog({
             initial={{ opacity: 0, scale: 0.95, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed left-1/2 top-1/2 z-50 max-h-[85vh] w-full max-w-lg -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-3xl border border-gray-100 bg-white p-6 shadow-xl focus:outline-none"
+            className="font-admin fixed left-1/2 top-1/2 z-50 max-h-[85vh] w-full max-w-lg -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-3xl border border-gray-100 bg-white p-6 shadow-xl focus:outline-none"
           >
             <div className="flex items-start justify-between">
               <div className="pr-8">
