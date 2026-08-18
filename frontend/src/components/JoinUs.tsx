@@ -1,22 +1,10 @@
-import { useState, type FormEvent } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { Check } from "lucide-react";
+import { motion } from "framer-motion";
 import { siteConfig } from "../data/content";
 
 const MASK_ID = "wave-mask";
 
 export default function JoinUs() {
-  const { eyebrow, heading, description, image, waveBars, newsletter } =
-    siteConfig.joinUs;
-  const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
-
-  const handleSubmit = (event: FormEvent) => {
-    event.preventDefault();
-    if (!email.trim()) return;
-    setSubmitted(true);
-    setEmail("");
-  };
+  const { eyebrow, heading, image, waveBars } = siteConfig.joinUs;
 
   return (
     <section id="join" className="bg-orange px-4 py-28 sm:px-6 lg:px-10 lg:py-36">
@@ -81,58 +69,18 @@ export default function JoinUs() {
           {heading}
         </motion.h2>
 
-        <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.15 }}
-          className="mx-auto mt-6 max-w-md text-center text-sm leading-relaxed text-white/75 md:text-base"
-        >
-          {description}
-        </motion.p>
-
-        <motion.form
+        <motion.a
+          href="https://www.example.com/donate"
+          target="_blank"
+          rel="noopener noreferrer"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          onSubmit={handleSubmit}
-          className="mt-10 flex w-full max-w-2xl flex-col gap-3 sm:flex-row"
+          transition={{ duration: 0.6, delay: 0.15 }}
+          className="mt-10 inline-block rounded-full bg-white px-12 py-4 text-sm font-bold tracking-[0.18em] text-black transition-transform hover:scale-[1.03] active:scale-95"
         >
-          <label htmlFor="newsletter-email" className="sr-only">
-            Email address
-          </label>
-          <input
-            id="newsletter-email"
-            type="email"
-            required
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            placeholder={newsletter.placeholder}
-            className="h-14 flex-1 rounded-full border border-white/40 bg-black/10 px-6 text-sm text-white placeholder-white/60 outline-none transition-colors focus:border-white"
-          />
-          <button
-            type="submit"
-            className="h-14 rounded-full bg-white px-10 text-sm font-bold tracking-[0.18em] text-black transition-transform hover:scale-[1.03] active:scale-95"
-          >
-            {newsletter.button}
-          </button>
-        </motion.form>
-
-        <AnimatePresence>
-          {submitted && (
-            <motion.p
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="mt-6 flex items-center gap-2 text-sm font-medium text-white"
-            >
-              <Check className="size-4" aria-hidden="true" />
-              {newsletter.success}
-            </motion.p>
-          )}
-        </AnimatePresence>
+          DONATE NOW
+        </motion.a>
       </div>
     </section>
   );

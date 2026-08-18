@@ -26,8 +26,7 @@ export const siteConfig = {
 
   hero: {
     titleLines: ["HEALTH EDUCATION AND", "LIVELIHOOD PROMOTION SOCIETY"],
-    image:
-      "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1800&q=80",
+    image: "/assets/masked_image_hero.jpg",
     primaryCta: { label: "DONATE", target: "join" },
     secondaryCta: { label: "TELL MY STORY", target: "contact" },
   },
@@ -64,33 +63,33 @@ export const siteConfig = {
 
   objectives: [
     {
-      title: "EQUAL RIGHTS",
+      title: "SADHNA",
       image:
-        "https://images.unsplash.com/photo-1511988617509-a57c8a288659?auto=format&fit=crop&w=1400&q=80",
+        "/assets/child-holding-red-rubber-heart.jpg",
     },
     {
-      title: "CHILD PROTECTION",
+      title: "SEWA",
       image:
-        "https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=1400&q=80",
+        "/assets/hands-trees-growing-seedlings.jpg",
     },
     {
-      title: "SAVE PLANET",
+      title: "SATSANG",
       image:
-        "https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&w=1400&q=80",
+        "/assets/Kids_in_uniform.jpg",
     },
   ],
 
   whatWeDo: {
     heading: "WHAT WE DO",
     description:
-      "We support communities through storytelling, education, and advocacy — turning lived experience into lasting change.",
+      "We support communities through livelihood, education, and platform — turning lived experience into lasting change.",
     cards: [
       {
-        title: "HELPING VOICES BE HEARD",
+        title: "HELPING PEOPLE FOR LIVELIHOOD",
         description:
-          "We train people to tell their own stories — with dignity, safety, and reach.",
+          "We train people to be on their own — with dignity, safety, and reach.",
         image:
-          "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1200&q=80",
+          "/assets/indian-engineer-work-building-site.jpg",
       },
       {
         title: "CREATING SPACES TO LEARN",
@@ -102,7 +101,7 @@ export const siteConfig = {
       {
         title: "TURNING WORDS INTO ACTION",
         description:
-          "Local voices into global conversations — through campaigns, reports, and engagement.",
+          "Local voices into national conversations — through campaigns, reports, and engagement.",
         image:
           "https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?auto=format&fit=crop&w=1200&q=80",
       },
@@ -115,7 +114,7 @@ export const siteConfig = {
     description:
       "One email, twice a month. Stories, campaigns, and ways to act — straight from the field.",
     image:
-      "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1600&q=80",
+      "/assets/volunteer.jpg",
     waveBars: [
       { x: 21, y: 43, width: 6, height: 14, rx: 3 },
       { x: 41, y: 33, width: 6, height: 34, rx: 3 },

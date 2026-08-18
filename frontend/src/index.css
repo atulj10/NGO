@@ -7,8 +7,10 @@
   --color-black: #111111;
   --color-white: #ffffff;
 
-  --font-display: "Bebas Neue", "Oswald", "Arial Narrow", sans-serif;
-  --font-body: "Inter", "Helvetica Neue", Arial, sans-serif;
+  --font-heading: "Bree Serif", serif;
+  --font-para: "Kalam", cursive;
+  --font-display: "Bree Serif", serif;
+  --font-body: "Kalam", cursive;
 }
 
 :root {
@@ -27,7 +29,7 @@ body {
 
 body {
   margin: 0;
-  font-family: var(--font-body);
+  font-family: var(--font-para);
   background-color: var(--color-off-white);
   color: var(--color-black);
   -webkit-font-smoothing: antialiased;
@@ -48,7 +50,7 @@ body {
 /* Hero: photograph clipped inside the letterforms                     */
 /* ------------------------------------------------------------------ */
 .hero-title {
-  font-family: var(--font-display);
+  font-family: var(--font-heading);
   font-size: clamp(3.5rem, 15vw, 15rem);
   line-height: 0.84;
   letter-spacing: 0.015em;
@@ -101,7 +103,7 @@ body {
 /* Footer: large low-contrast statement                                */
 /* ------------------------------------------------------------------ */
 .footer-statement {
-  font-family: var(--font-display);
+  font-family: var(--font-heading);
   font-size: clamp(2.6rem, 8.5vw, 8.5rem);
   line-height: 0.92;
   letter-spacing: 0.02em;

@@ -8,7 +8,7 @@ interface LogoProps {
 export default function Logo({ className = "", compact = false }: LogoProps) {
   return (
     <a
-      href="#home"
+      href="/"
       aria-label={`${siteConfig.organizationName} — back to top`}
       className={`inline-flex items-center gap-2.5 ${className}`}
     >

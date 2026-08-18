@@ -14,19 +14,27 @@ export default function Hero() {
       id="home"
       className="flex min-h-svh flex-col items-center justify-center bg-off-white px-4 pb-16 pt-28 sm:px-6 lg:px-10"
     >
-      <motion.h1
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        className="hero-title select-none text-center"
-        style={heroStyle}
-      >
-        {titleLines.map((line) => (
-          <span key={line} className="block text-5xl font-bold sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl">
-            {line}
-          </span>
-        ))}
-      </motion.h1>
+      <div className="relative">
+        <img
+          src="/assets/hero_background.png"
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 -top-[135%] h-[250%] w-full object-cover object-bottom select-none pointer-events-none"
+        />
+        <motion.h1
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="hero-title relative select-none text-center"
+          style={heroStyle}
+        >
+          {titleLines.map((line) => (
+            <span key={line} className="block text-5xl font-bold sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl">
+              {line}
+            </span>
+          ))}
+        </motion.h1>
+      </div>
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}

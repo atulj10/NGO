@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { siteConfig } from "../data/content";
 
-const ROTATION_MS = 1000;
+const ROTATION_MS = 1500;
 
 export default function Objectives() {
   const objectives = siteConfig.objectives;
@@ -37,7 +37,7 @@ export default function Objectives() {
         {objectives.map((objective, index) => (
           <span
             key={objective.title}
-            className={`font-display text-9xl leading-none  tracking-wide transition-colors duration-500 sm:text-5xl lg:text-9xl ${
+            className={`font-display text-7xl leading-none  tracking-wide transition-colors duration-500 sm:text-5xl lg:text-9xl ${
               index === activeIndex ? "text-white" : "text-outline-white"
             }`}
           >
