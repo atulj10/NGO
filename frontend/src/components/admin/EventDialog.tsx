@@ -2,16 +2,20 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import {
-  eventCategories,
-  type EventCategory,
-  type ScheduleEvent,
-} from "../../data/adminData";
+import { getEvents } from "../../services/event.service";
+import type { ApiEvent } from "../../services/types";
+import { useEffect } from "react";
 
 interface EventDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (event: Omit<ScheduleEvent, "id">) => void;
+  onSubmit: (event: {
+    name: string;
+    date: string;
+    location: string;
+    category: string;
+    description: string;
+  }) => void;
 }
 
 interface FormErrors {
@@ -21,11 +25,22 @@ interface FormErrors {
   category?: string;
 }
 
+const eventCategories = [
+  "Workshop",
+  "Campaign",
+  "Community",
+  "Education",
+  "Healthcare",
+  "Environment",
+  "Fundraising",
+  "Other",
+];
+
 const emptyForm = {
   name: "",
   date: "",
   location: "",
-  category: "" as EventCategory | "",
+  category: "",
   description: "",
 };
 
@@ -36,6 +51,13 @@ export default function EventDialog({
 }: EventDialogProps) {
   const [form, setForm] = useState(emptyForm);
   const [errors, setErrors] = useState<FormErrors>({});
+  const [events, setEvents] = useState<ApiEvent[]>([]);
+
+  useEffect(() => {
+    if (open) {
+      getEvents({ limit: 100 }).then((res) => setEvents(res.data));
+    }
+  }, [open]);
 
   function validate(): boolean {
     const newErrors: FormErrors = {};
@@ -54,7 +76,7 @@ export default function EventDialog({
       name: form.name.trim(),
       date: form.date,
       location: form.location.trim(),
-      category: form.category as EventCategory,
+      category: form.category,
       description: form.description.trim(),
     });
     setForm(emptyForm);
@@ -157,10 +179,7 @@ export default function EventDialog({
                 <select
                   value={form.category}
                   onChange={(e) =>
-                    setForm({
-                      ...form,
-                      category: e.target.value as EventCategory | "",
-                    })
+                    setForm({ ...form, category: e.target.value })
                   }
                   className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-black outline-none transition focus:border-orange focus:ring-2 focus:ring-orange/20"
                 >

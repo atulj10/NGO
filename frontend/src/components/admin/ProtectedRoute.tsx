@@ -1,13 +1,14 @@
-// import { Navigate } from "react-router-dom";
-// import { isAuthenticated } from "../../utils/auth";
+import { Navigate } from "react-router-dom";
+import { isAuthenticated } from "../../utils/auth";
 
 export default function ProtectedRoute({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // if (!isAuthenticated()) {
-  //   return <Navigate to="/admin/login" replace />;
-  // }
+  const authed = isAuthenticated();
+  if (!authed) {
+    return <Navigate to="/admin/login" replace />;
+  }
   return <>{children}</>;
 }

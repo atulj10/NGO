@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -13,15 +14,98 @@ import { ArrowRight, Calendar } from "lucide-react";
 import StatCard from "../../components/admin/StatCard";
 import ChartCard from "../../components/admin/ChartCard";
 import StatusBadge from "../../components/admin/StatusBadge";
-import {
-  dashboardStats,
-  programActivityData,
-  dashboardUpcomingEvents,
-  dashboardRecentReports,
-} from "../../data/adminData";
+import { getDashboard } from "../../services/dashboard.service";
+import type { DashboardData } from "../../services/types";
+
+function mapStatus(status: string): "Completed" | "Pending" | "Draft" {
+  const s = status.toUpperCase();
+  if (s === "COMPLETED") return "Completed";
+  if (s === "DRAFT") return "Draft";
+  return "Pending";
+}
+
+function formatEventDate(dateStr: string): string {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString("en-US", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+function formatEventTime(dateStr: string): string {
+  const date = new Date(dateStr);
+  return date.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+}
+
+function formatReportDate(dateStr: string): string {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString("en-US", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const [dashboard, setDashboard] = useState<DashboardData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    getDashboard()
+      .then((res) => {
+        setDashboard(res.data);
+      })
+      .catch(() => {
+        setError("Failed to load dashboard data");
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="text-sm text-gray-500">Loading dashboard...</div>
+      </div>
+    );
+  }
+
+  if (error || !dashboard) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="text-sm text-red-500">{error || "No data available"}</div>
+      </div>
+    );
+  }
+
+  const stats = [
+    {
+      label: "EVENTS THIS MONTH",
+      value: dashboard.statistics.eventsThisMonth,
+      subtitle: "This month",
+    },
+    {
+      label: "UPCOMING EVENTS",
+      value: dashboard.statistics.upcomingEvents,
+      subtitle: "Total upcoming",
+    },
+    {
+      label: "PENDING REPORTS",
+      value: dashboard.statistics.pendingReports,
+      subtitle: "Need attention",
+    },
+  ];
+
+  const chartData = dashboard.monthlyEvents.map((m) => ({
+    month: m.month,
+    value: m.count,
+  }));
 
   return (
     <motion.div
@@ -30,7 +114,7 @@ export default function Dashboard() {
       transition={{ duration: 0.3 }}
     >
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {dashboardStats.map((stat, i) => (
+        {stats.map((stat, i) => (
           <StatCard key={stat.label} {...stat} index={i} />
         ))}
       </div>
@@ -39,7 +123,7 @@ export default function Dashboard() {
         <ChartCard title="Program Activity">
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={programActivityData}>
+              <AreaChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                 <XAxis
                   dataKey="month"
@@ -79,7 +163,7 @@ export default function Dashboard() {
             </button>
           </div>
           <div className="mt-4 space-y-4">
-            {dashboardUpcomingEvents.map((event) => (
+            {dashboard.upcomingEvents.map((event) => (
               <div key={event.id} className="flex items-start gap-3">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-orange/10 text-orange">
                   <Calendar size={16} />
@@ -87,7 +171,7 @@ export default function Dashboard() {
                 <div>
                   <p className="text-sm font-medium text-black">{event.name}</p>
                   <p className="text-xs text-gray-500">
-                    {event.date} · {event.time}
+                    {formatEventDate(event.date)} · {formatEventTime(event.date)}
                   </p>
                   <p className="text-xs text-gray-400">{event.location}</p>
                 </div>
@@ -106,16 +190,20 @@ export default function Dashboard() {
             Recent Reports
           </h3>
           <div className="mt-4 space-y-4">
-            {dashboardRecentReports.map((report) => (
+            {dashboard.recentReports.map((report) => (
               <div
                 key={report.id}
                 className="flex items-center justify-between"
               >
                 <div>
-                  <p className="text-sm font-medium text-black">{report.name}</p>
-                  <p className="text-xs text-gray-500">{report.date}</p>
+                  <p className="text-sm font-medium text-black">
+                    {report.event?.name || "Report"}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    {formatReportDate(report.createdAt)}
+                  </p>
                 </div>
-                <StatusBadge status={report.status} />
+                <StatusBadge status={mapStatus(report.status)} />
               </div>
             ))}
           </div>

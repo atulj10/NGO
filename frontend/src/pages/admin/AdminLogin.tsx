@@ -3,7 +3,7 @@ import { Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Eye, EyeOff } from "lucide-react";
 import { login, isAuthenticated } from "../../utils/auth";
-import { adminCredentials } from "../../data/adminData";
+import { login as apiLogin } from "../../services/auth.service";
 import { siteConfig } from "../../data/content";
 
 export default function AdminLogin() {
@@ -17,23 +17,23 @@ export default function AdminLogin() {
     return <Navigate to="/admin/dashboard" replace />;
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
     setLoading(true);
 
-    setTimeout(() => {
-      if (
-        email === adminCredentials.email &&
-        password === adminCredentials.password
-      ) {
-        login();
-        window.location.href = "/admin/dashboard";
-      } else {
-        setError("Invalid email or password. Please try again.");
-        setLoading(false);
-      }
-    }, 500);
+    try {
+      const response = await apiLogin(email, password);
+      login(response.token, response.admin);
+      window.location.href = "/admin/dashboard";
+    } catch (err: unknown) {
+      console.error("Login failed:", err);
+      const message =
+        (err as { response?: { data?: { message?: string } } })?.response?.data
+          ?.message || "Invalid email or password. Please try again.";
+      setError(message);
+      setLoading(false);
+    }
   }
 
   return (

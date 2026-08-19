@@ -1,16 +1,16 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { X, Calendar, MapPin, Tag } from "lucide-react";
 import { motion } from "framer-motion";
-import type { ScheduleEvent } from "../../data/adminData";
+import type { UIEvent } from "../../pages/admin/Schedule";
 
 interface EventDetailDialogProps {
-  event: ScheduleEvent | null;
+  event: UIEvent | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
 function formatDate(dateStr: string): string {
-  const date = new Date(dateStr + "T00:00:00");
+  const date = new Date(dateStr);
   return date.toLocaleDateString("en-US", {
     weekday: "long",
     day: "numeric",

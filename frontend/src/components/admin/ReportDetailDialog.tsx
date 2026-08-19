@@ -1,17 +1,17 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { X, Link as LinkIcon, Image } from "lucide-react";
 import { motion } from "framer-motion";
-import type { Report } from "../../data/adminData";
+import type { UIReport } from "../../pages/admin/Reports";
 import StatusBadge from "./StatusBadge";
 
 interface ReportDetailDialogProps {
-  report: Report | null;
+  report: UIReport | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
 function formatDate(dateStr: string): string {
-  const date = new Date(dateStr + "T00:00:00");
+  const date = new Date(dateStr);
   return date.toLocaleDateString("en-US", {
     day: "numeric",
     month: "long",
@@ -25,6 +25,8 @@ export default function ReportDetailDialog({
   onOpenChange,
 }: ReportDetailDialogProps) {
   if (!report) return null;
+
+  const uploadBase = "/uploads/reports/";
 
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
@@ -76,31 +78,22 @@ export default function ReportDetailDialog({
               </p>
             </div>
 
-            {report.media.length > 0 && (
+            {report.attachments.length > 0 && (
               <div className="mt-5 border-t border-gray-100 pt-5">
                 <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
                   Media
                 </p>
                 <div className="mt-3 grid grid-cols-3 gap-2">
-                  {report.media.map((item, i) => (
+                  {report.attachments.map((item, i) => (
                     <div
                       key={i}
                       className="overflow-hidden rounded-xl border border-gray-100"
                     >
-                      {item.type.startsWith("image/") ? (
-                        <img
-                          src={item.data}
-                          alt={item.name}
-                          className="h-24 w-full object-cover"
-                        />
-                      ) : (
-                        <div className="flex h-24 w-full items-center justify-center bg-gray-100">
-                          <Image size={20} className="text-gray-400" />
-                        </div>
-                      )}
-                      <p className="truncate px-2 py-1 text-[10px] text-gray-500">
-                        {item.name}
-                      </p>
+                      <img
+                        src={`${uploadBase}${item.url}`}
+                        alt="Attachment"
+                        className="h-24 w-full object-cover"
+                      />
                     </div>
                   ))}
                 </div>

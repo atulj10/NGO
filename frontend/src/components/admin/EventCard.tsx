@@ -1,8 +1,8 @@
 import { Calendar, MapPin } from "lucide-react";
-import type { ScheduleEvent } from "../../data/adminData";
+import type { UIEvent } from "../../pages/admin/Schedule";
 
 function formatDate(dateStr: string): string {
-  const date = new Date(dateStr + "T00:00:00");
+  const date = new Date(dateStr);
   return date.toLocaleDateString("en-US", {
     day: "numeric",
     month: "short",
@@ -10,7 +10,7 @@ function formatDate(dateStr: string): string {
   });
 }
 
-export default function EventCard({ event }: { event: ScheduleEvent }) {
+export default function EventCard({ event }: { event: UIEvent }) {
   return (
     <div className="rounded-3xl border border-gray-100 bg-white p-5 shadow-sm transition hover:shadow-md">
       <h4 className="font-semibold text-black">{event.name}</h4>

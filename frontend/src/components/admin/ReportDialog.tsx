@@ -2,23 +2,29 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { X, Upload, Link as LinkIcon, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import type {
-  ScheduleEvent,
-  Report,
-  MediaItem,
-  ReportStatus,
-} from "../../data/adminData";
+import type { ApiEvent } from "../../services/types";
 
 interface ReportDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (report: Omit<Report, "id" | "createdAt">) => void;
-  events: ScheduleEvent[];
+  onSubmit: (report: {
+    eventId: string;
+    summary: string;
+    files: File[];
+    socialLinks: string[];
+    status: "DRAFT" | "COMPLETED";
+  }) => void;
+  events: ApiEvent[];
 }
 
 interface FormErrors {
   eventId?: string;
   summary?: string;
+}
+
+interface MediaPreview {
+  file: File;
+  preview: string;
 }
 
 export default function ReportDialog({
@@ -29,9 +35,9 @@ export default function ReportDialog({
 }: ReportDialogProps) {
   const [eventId, setEventId] = useState("");
   const [summary, setSummary] = useState("");
-  const [media, setMedia] = useState<MediaItem[]>([]);
+  const [media, setMedia] = useState<MediaPreview[]>([]);
   const [socialLinks, setSocialLinks] = useState<string[]>([""]);
-  const [status, setStatus] = useState<ReportStatus>("Draft");
+  const [status, setStatus] = useState<"DRAFT" | "COMPLETED">("DRAFT");
   const [errors, setErrors] = useState<FormErrors>({});
 
   function validate(): boolean {
@@ -45,12 +51,10 @@ export default function ReportDialog({
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!validate()) return;
-    const selectedEvent = events.find((ev) => ev.id === parseInt(eventId, 10));
     onSubmit({
-      eventId: parseInt(eventId, 10),
-      eventName: selectedEvent?.name || "",
+      eventId,
       summary: summary.trim(),
-      media,
+      files: media.map((m) => m.file),
       socialLinks: socialLinks.filter((l) => l.trim()),
       status,
     });
@@ -60,9 +64,10 @@ export default function ReportDialog({
   function resetForm() {
     setEventId("");
     setSummary("");
+    media.forEach((m) => URL.revokeObjectURL(m.preview));
     setMedia([]);
     setSocialLinks([""]);
-    setStatus("Draft");
+    setStatus("DRAFT");
     setErrors({});
   }
 
@@ -75,24 +80,17 @@ export default function ReportDialog({
     const files = e.target.files;
     if (!files) return;
     Array.from(files).forEach((file) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setMedia((prev) => [
-          ...prev,
-          {
-            name: file.name,
-            type: file.type,
-            data: reader.result as string,
-          },
-        ]);
-      };
-      reader.readAsDataURL(file);
+      const preview = URL.createObjectURL(file);
+      setMedia((prev) => [...prev, { file, preview }]);
     });
     e.target.value = "";
   }
 
   function removeMedia(index: number) {
-    setMedia((prev) => prev.filter((_, i) => i !== index));
+    setMedia((prev) => {
+      URL.revokeObjectURL(prev[index].preview);
+      return prev.filter((_, i) => i !== index);
+    });
   }
 
   function addSocialLink() {
@@ -153,7 +151,7 @@ export default function ReportDialog({
                   <option value="">Select an event</option>
                   {events.map((ev) => (
                     <option key={ev.id} value={ev.id}>
-                      {ev.name} ({ev.date})
+                      {ev.name} ({new Date(ev.date).toLocaleDateString()})
                     </option>
                   ))}
                 </select>
@@ -200,10 +198,10 @@ export default function ReportDialog({
                         key={i}
                         className="group relative overflow-hidden rounded-xl border border-gray-100"
                       >
-                        {item.type.startsWith("image/") ? (
+                        {item.file.type.startsWith("image/") ? (
                           <img
-                            src={item.data}
-                            alt={item.name}
+                            src={item.preview}
+                            alt={item.file.name}
                             className="h-20 w-full object-cover"
                           />
                         ) : (
@@ -215,12 +213,12 @@ export default function ReportDialog({
                           type="button"
                           onClick={() => removeMedia(i)}
                           className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-white opacity-0 transition group-hover:opacity-100"
-                          aria-label={`Remove ${item.name}`}
+                          aria-label={`Remove ${item.file.name}`}
                         >
                           <X size={10} />
                         </button>
                         <p className="truncate px-1.5 py-1 text-[10px] text-gray-500">
-                          {item.name}
+                          {item.file.name}
                         </p>
                       </div>
                     ))}
@@ -235,10 +233,7 @@ export default function ReportDialog({
                 <div className="mt-1 space-y-2">
                   {socialLinks.map((link, i) => (
                     <div key={i} className="flex items-center gap-2">
-                      <LinkIcon
-                        size={14}
-                        className="shrink-0 text-gray-400"
-                      />
+                      <LinkIcon size={14} className="shrink-0 text-gray-400" />
                       <input
                         type="url"
                         value={link}
@@ -276,13 +271,12 @@ export default function ReportDialog({
                 <select
                   value={status}
                   onChange={(e) =>
-                    setStatus(e.target.value as ReportStatus)
+                    setStatus(e.target.value as "DRAFT" | "COMPLETED")
                   }
                   className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-black outline-none transition focus:border-orange focus:ring-2 focus:ring-orange/20"
                 >
-                  <option value="Draft">Draft</option>
-                  <option value="Pending">Pending Review</option>
-                  <option value="Completed">Completed</option>
+                  <option value="DRAFT">Draft</option>
+                  <option value="COMPLETED">Completed</option>
                 </select>
               </div>
 

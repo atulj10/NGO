@@ -1,7 +1,7 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { User } from "lucide-react";
-import { logout } from "../../utils/auth";
+import { logout, getUser } from "../../utils/auth";
 
 const pageTitles: Record<string, { title: string; description: string }> = {
   "/admin/dashboard": {
@@ -21,6 +21,7 @@ const pageTitles: Record<string, { title: string; description: string }> = {
 export default function AdminHeader() {
   const navigate = useNavigate();
   const location = useLocation();
+  const user = getUser();
   const page = pageTitles[location.pathname] || {
     title: "Admin",
     description: "",
@@ -37,7 +38,6 @@ export default function AdminHeader() {
         <h1 className="font-display text-2xl  text-black">
           {page.title}
         </h1>
-        {/* <p className="mt-0.5 text-sm text-gray-500">{page.description}</p> */}
       </div>
 
       <DropdownMenu.Root>
@@ -46,7 +46,7 @@ export default function AdminHeader() {
             <div className="flex h-7 w-7 items-center justify-center rounded-full bg-orange/10 text-orange">
               <User size={14} />
             </div>
-            <span>Admin</span>
+            <span>{user?.name || "Admin"}</span>
             <svg
               className="h-4 w-4 text-gray-400"
               fill="none"
@@ -69,9 +69,11 @@ export default function AdminHeader() {
             className="z-50 min-w-[200px] rounded-xl border border-gray-100 bg-white p-1.5 shadow-lg"
           >
             <div className="px-3 py-2">
-              <p className="text-sm font-medium text-black">Admin</p>
+              <p className="text-sm font-medium text-black">
+                {user?.name || "Admin"}
+              </p>
               <p className="text-xs text-gray-500">
-                admin@voicesunited.org
+                {user?.email || "admin@voicesunited.org"}
               </p>
             </div>
             <DropdownMenu.Separator className="my-1 h-px bg-gray-100" />

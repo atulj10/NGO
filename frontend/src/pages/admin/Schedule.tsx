@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Plus, Search } from "lucide-react";
 import EventDialog from "../../components/admin/EventDialog";
@@ -6,31 +6,33 @@ import EventDetailDialog from "../../components/admin/EventDetailDialog";
 import EventCard from "../../components/admin/EventCard";
 import Pagination from "../../components/admin/Pagination";
 import Toast from "../../components/admin/Toast";
-import {
-  defaultScheduleEvents,
-  eventCategories,
-  type ScheduleEvent,
-} from "../../data/adminData";
+import { getEvents, createEvent } from "../../services/event.service";
+import type { ApiEvent } from "../../services/types";
 
 const EVENTS_PER_PAGE = 8;
-const EVENTS_KEY = "ngo_admin_events";
 
-function loadEvents(): ScheduleEvent[] {
-  try {
-    const stored = localStorage.getItem(EVENTS_KEY);
-    if (stored) return JSON.parse(stored) as ScheduleEvent[];
-  } catch {
-    // ignore
-  }
-  return [...defaultScheduleEvents];
+export interface UIEvent {
+  id: string;
+  name: string;
+  date: string;
+  location: string;
+  category: string;
+  description: string;
 }
 
-function saveEvents(events: ScheduleEvent[]) {
-  localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
+function apiEventToUI(e: ApiEvent): UIEvent {
+  return {
+    id: e.id,
+    name: e.name,
+    date: e.date,
+    location: e.location,
+    category: e.category,
+    description: e.description ?? "",
+  };
 }
 
 function formatDate(dateStr: string): string {
-  const date = new Date(dateStr + "T00:00:00");
+  const date = new Date(dateStr);
   return date.toLocaleDateString("en-US", {
     day: "numeric",
     month: "short",
@@ -39,43 +41,44 @@ function formatDate(dateStr: string): string {
 }
 
 export default function Schedule() {
-  const [events, setEvents] = useState<ScheduleEvent[]>(loadEvents);
+  const [events, setEvents] = useState<UIEvent[]>([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [dateFilter, setDateFilter] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [detailEvent, setDetailEvent] = useState<ScheduleEvent | null>(null);
+  const [detailEvent, setDetailEvent] = useState<UIEvent | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const fetchEvents = useCallback(async () => {
+    setLoading(true);
+    try {
+      const params: Record<string, string | number> = {
+        page: currentPage,
+        limit: EVENTS_PER_PAGE,
+      };
+      if (search) params.search = search;
+      if (categoryFilter !== "all") params.search = search || categoryFilter;
+      if (dateFilter) params.fromDate = dateFilter;
+
+      const res = await getEvents(params as Parameters<typeof getEvents>[0]);
+      setEvents(res.data.map(apiEventToUI));
+      setTotalPages(res.pagination.totalPages);
+      setTotalItems(res.pagination.total);
+    } catch {
+      // silently fail
+    } finally {
+      setLoading(false);
+    }
+  }, [currentPage, search, categoryFilter, dateFilter]);
 
   useEffect(() => {
-    saveEvents(events);
-  }, [events]);
-
-  const filteredEvents = useMemo(() => {
-    return events.filter((event) => {
-      const q = search.toLowerCase();
-      const matchesSearch =
-        !search ||
-        event.name.toLowerCase().includes(q) ||
-        event.location.toLowerCase().includes(q);
-      const matchesCategory =
-        categoryFilter === "all" || event.category === categoryFilter;
-      const matchesDate = !dateFilter || event.date >= dateFilter;
-      return matchesSearch && matchesCategory && matchesDate;
-    });
-  }, [events, search, categoryFilter, dateFilter]);
-
-  const totalPages = Math.max(
-    1,
-    Math.ceil(filteredEvents.length / EVENTS_PER_PAGE)
-  );
-  const safePage = Math.min(currentPage, totalPages);
-  const paginatedEvents = filteredEvents.slice(
-    (safePage - 1) * EVENTS_PER_PAGE,
-    safePage * EVENTS_PER_PAGE
-  );
+    fetchEvents();
+  }, [fetchEvents]);
 
   const handleSearchChange = useCallback((value: string) => {
     setSearch(value);
@@ -92,14 +95,30 @@ export default function Schedule() {
     setCurrentPage(1);
   }, []);
 
-  function handleCreateEvent(newEvent: Omit<ScheduleEvent, "id">) {
-    const id = Math.max(0, ...events.map((e) => e.id)) + 1;
-    setEvents((prev) => [{ ...newEvent, id }, ...prev]);
-    setDialogOpen(false);
-    setToast("Event created successfully.");
+  async function handleCreateEvent(newEvent: {
+    name: string;
+    date: string;
+    location: string;
+    category: string;
+    description: string;
+  }) {
+    try {
+      await createEvent({
+        name: newEvent.name,
+        category: newEvent.category,
+        description: newEvent.description || undefined,
+        location: newEvent.location,
+        date: new Date(newEvent.date).toISOString(),
+      });
+      setDialogOpen(false);
+      setToast("Event created successfully.");
+      fetchEvents();
+    } catch {
+      setToast("Failed to create event.");
+    }
   }
 
-  function openDetail(event: ScheduleEvent) {
+  function openDetail(event: UIEvent) {
     setDetailEvent(event);
     setDetailOpen(true);
   }
@@ -146,11 +165,14 @@ export default function Schedule() {
           className="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-600 outline-none transition focus:border-orange focus:ring-2 focus:ring-orange/20"
         >
           <option value="all">All Categories</option>
-          {eventCategories.map((cat) => (
-            <option key={cat} value={cat}>
-              {cat}
-            </option>
-          ))}
+          <option value="Workshop">Workshop</option>
+          <option value="Campaign">Campaign</option>
+          <option value="Community">Community</option>
+          <option value="Education">Education</option>
+          <option value="Healthcare">Healthcare</option>
+          <option value="Environment">Environment</option>
+          <option value="Fundraising">Fundraising</option>
+          <option value="Other">Other</option>
         </select>
         <input
           type="date"
@@ -162,7 +184,11 @@ export default function Schedule() {
       </div>
 
       <div className="mt-6">
-        {paginatedEvents.length === 0 ? (
+        {loading ? (
+          <div className="flex items-center justify-center py-12">
+            <p className="text-sm text-gray-500">Loading events...</p>
+          </div>
+        ) : events.length === 0 ? (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -196,7 +222,7 @@ export default function Schedule() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
-                  {paginatedEvents.map((event, i) => (
+                  {events.map((event, i) => (
                     <motion.tr
                       key={event.id}
                       initial={{ opacity: 0 }}
@@ -226,7 +252,7 @@ export default function Schedule() {
             </div>
 
             <div className="space-y-4 md:hidden">
-              {paginatedEvents.map((event, i) => (
+              {events.map((event, i) => (
                 <motion.div
                   key={event.id}
                   initial={{ opacity: 0, y: 10 }}
@@ -242,10 +268,10 @@ export default function Schedule() {
 
             <div className="mt-6">
               <Pagination
-                currentPage={safePage}
+                currentPage={currentPage}
                 totalPages={totalPages}
                 onPageChange={setCurrentPage}
-                totalItems={filteredEvents.length}
+                totalItems={totalItems}
                 itemsPerPage={EVENTS_PER_PAGE}
               />
             </div>

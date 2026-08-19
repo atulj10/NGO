@@ -1,48 +1,50 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Plus, Search } from "lucide-react";
 import ReportDialog from "../../components/admin/ReportDialog";
 import ReportDetailDialog from "../../components/admin/ReportDetailDialog";
-import StatusBadge from "../../components/admin/StatusBadge";
+import StatusBadge, { mapBackendStatus } from "../../components/admin/StatusBadge";
 import Pagination from "../../components/admin/Pagination";
 import Toast from "../../components/admin/Toast";
-import {
-  defaultReports,
-  defaultScheduleEvents,
-  type Report,
-  type ScheduleEvent,
-} from "../../data/adminData";
+import { getReports, createReport, uploadAttachment } from "../../services/report.service";
+import { getEvents } from "../../services/event.service";
+import type { ApiReport, ApiEvent } from "../../services/types";
 
 const REPORTS_PER_PAGE = 8;
-const REPORTS_KEY = "ngo_admin_reports";
-const EVENTS_KEY = "ngo_admin_events";
 
-function loadReports(): Report[] {
-  try {
-    const stored = localStorage.getItem(REPORTS_KEY);
-    if (stored) return JSON.parse(stored) as Report[];
-  } catch {
-    // ignore
-  }
-  return [...defaultReports];
+export interface UIReport {
+  id: string;
+  eventId: string;
+  eventName: string;
+  summary: string;
+  mediaCount: number;
+  socialLinksCount: number;
+  status: "Completed" | "Pending" | "Draft";
+  createdAt: string;
+  attachments: { url: string; type: string }[];
+  socialLinks: string[];
 }
 
-function loadEvents(): ScheduleEvent[] {
-  try {
-    const stored = localStorage.getItem(EVENTS_KEY);
-    if (stored) return JSON.parse(stored) as ScheduleEvent[];
-  } catch {
-    // ignore
-  }
-  return [...defaultScheduleEvents];
-}
-
-function saveReports(reports: Report[]) {
-  localStorage.setItem(REPORTS_KEY, JSON.stringify(reports));
+function apiReportToUI(r: ApiReport): UIReport {
+  const attachments = r.attachments ?? [];
+  const mediaAttachments = attachments.filter((a) => a.type === "MEDIA");
+  const socialAttachments = attachments.filter((a) => a.type === "SOCIAL_LINK");
+  return {
+    id: r.id,
+    eventId: r.eventId,
+    eventName: r.event?.name || "Unknown Event",
+    summary: r.overview,
+    mediaCount: mediaAttachments.length,
+    socialLinksCount: socialAttachments.length,
+    status: mapBackendStatus(r.status),
+    createdAt: r.createdAt,
+    attachments: mediaAttachments,
+    socialLinks: socialAttachments.map((a) => a.url),
+  };
 }
 
 function formatDate(dateStr: string): string {
-  const date = new Date(dateStr + "T00:00:00");
+  const date = new Date(dateStr);
   return date.toLocaleDateString("en-US", {
     day: "numeric",
     month: "short",
@@ -51,42 +53,48 @@ function formatDate(dateStr: string): string {
 }
 
 export default function Reports() {
-  const [reports, setReports] = useState<Report[]>(loadReports);
-  const [events] = useState<ScheduleEvent[]>(loadEvents);
+  const [reports, setReports] = useState<UIReport[]>([]);
+  const [events, setEvents] = useState<ApiEvent[]>([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [currentPage, setCurrentPage] = useState(1);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [detailReport, setDetailReport] = useState<Report | null>(null);
+  const [detailReport, setDetailReport] = useState<UIReport | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const fetchReports = useCallback(async () => {
+    setLoading(true);
+    try {
+      const params: Record<string, string | number> = {
+        page: currentPage,
+        limit: REPORTS_PER_PAGE,
+      };
+      if (statusFilter !== "all") {
+        params.status = statusFilter.toUpperCase();
+      }
+
+      const res = await getReports(params as Parameters<typeof getReports>[0]);
+      setReports(res.data.map(apiReportToUI));
+      setTotalPages(res.pagination.totalPages);
+      setTotalItems(res.pagination.total);
+    } catch {
+      // silently fail
+    } finally {
+      setLoading(false);
+    }
+  }, [currentPage, statusFilter]);
 
   useEffect(() => {
-    saveReports(reports);
-  }, [reports]);
+    fetchReports();
+  }, [fetchReports]);
 
-  const filteredReports = useMemo(() => {
-    return reports.filter((report) => {
-      const q = search.toLowerCase();
-      const matchesSearch =
-        !search ||
-        report.eventName.toLowerCase().includes(q) ||
-        report.summary.toLowerCase().includes(q);
-      const matchesStatus =
-        statusFilter === "all" || report.status === statusFilter;
-      return matchesSearch && matchesStatus;
-    });
-  }, [reports, search, statusFilter]);
-
-  const totalPages = Math.max(
-    1,
-    Math.ceil(filteredReports.length / REPORTS_PER_PAGE)
-  );
-  const safePage = Math.min(currentPage, totalPages);
-  const paginatedReports = filteredReports.slice(
-    (safePage - 1) * REPORTS_PER_PAGE,
-    safePage * REPORTS_PER_PAGE
-  );
+  useEffect(() => {
+    getEvents({ limit: 100 }).then((res) => setEvents(res.data));
+  }, []);
 
   const handleSearchChange = useCallback((value: string) => {
     setSearch(value);
@@ -98,18 +106,35 @@ export default function Reports() {
     setCurrentPage(1);
   }, []);
 
-  function handleCreateReport(newReport: Omit<Report, "id" | "createdAt">) {
-    const id = Math.max(0, ...reports.map((r) => r.id)) + 1;
-    const today = new Date().toISOString().split("T")[0];
-    setReports((prev) => [
-      { ...newReport, id, createdAt: today },
-      ...prev,
-    ]);
-    setDialogOpen(false);
-    setToast("Report created successfully.");
+  async function handleCreateReport(payload: {
+    eventId: string;
+    summary: string;
+    files: File[];
+    socialLinks: string[];
+    status: "DRAFT" | "COMPLETED";
+  }) {
+    try {
+      const res = await createReport({
+        eventId: payload.eventId,
+        overview: payload.summary,
+        status: payload.status,
+      });
+
+      const reportId = res.data.id;
+
+      for (const file of payload.files) {
+        await uploadAttachment(reportId, file);
+      }
+
+      setDialogOpen(false);
+      setToast("Report created successfully.");
+      fetchReports();
+    } catch {
+      setToast("Failed to create report.");
+    }
   }
 
-  function openDetail(report: Report) {
+  function openDetail(report: UIReport) {
     setDetailReport(report);
     setDetailOpen(true);
   }
@@ -131,6 +156,14 @@ export default function Reports() {
     a.click();
     URL.revokeObjectURL(url);
   }
+
+  const filteredReports = search
+    ? reports.filter(
+        (r) =>
+          r.eventName.toLowerCase().includes(search.toLowerCase()) ||
+          r.summary.toLowerCase().includes(search.toLowerCase())
+      )
+    : reports;
 
   return (
     <div>
@@ -174,9 +207,8 @@ export default function Reports() {
           className="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-600 outline-none transition focus:border-orange focus:ring-2 focus:ring-orange/20"
         >
           <option value="all">All Status</option>
-          <option value="Completed">Completed</option>
-          <option value="Pending">Pending</option>
-          <option value="Draft">Draft</option>
+          <option value="COMPLETED">Completed</option>
+          <option value="DRAFT">Draft</option>
         </select>
         <motion.button
           whileHover={{ scale: 1.02 }}
@@ -189,7 +221,11 @@ export default function Reports() {
       </div>
 
       <div className="mt-6">
-        {paginatedReports.length === 0 ? (
+        {loading ? (
+          <div className="flex items-center justify-center py-12">
+            <p className="text-sm text-gray-500">Loading reports...</p>
+          </div>
+        ) : filteredReports.length === 0 ? (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -224,7 +260,7 @@ export default function Reports() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
-                  {paginatedReports.map((report, i) => (
+                  {filteredReports.map((report, i) => (
                     <motion.tr
                       key={report.id}
                       initial={{ opacity: 0 }}
@@ -240,10 +276,10 @@ export default function Reports() {
                         {report.summary}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-500">
-                        {report.media.length} file{report.media.length !== 1 ? "s" : ""}
+                        {report.mediaCount} file{report.mediaCount !== 1 ? "s" : ""}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-500">
-                        {report.socialLinks.filter((l) => l).length} link{report.socialLinks.filter((l) => l).length !== 1 ? "s" : ""}
+                        {report.socialLinksCount} link{report.socialLinksCount !== 1 ? "s" : ""}
                       </td>
                       <td className="px-6 py-4">
                         <StatusBadge status={report.status} />
@@ -258,7 +294,7 @@ export default function Reports() {
             </div>
 
             <div className="space-y-3 md:hidden">
-              {paginatedReports.map((report, i) => (
+              {filteredReports.map((report, i) => (
                 <motion.div
                   key={report.id}
                   initial={{ opacity: 0, y: 10 }}
@@ -277,10 +313,10 @@ export default function Reports() {
                       </p>
                       <div className="mt-2 flex items-center gap-3 text-xs text-gray-400">
                         <span>
-                          {report.media.length} media
+                          {report.mediaCount} media
                         </span>
                         <span>
-                          {report.socialLinks.filter((l) => l).length} links
+                          {report.socialLinksCount} links
                         </span>
                         <span>{formatDate(report.createdAt)}</span>
                       </div>
@@ -293,10 +329,10 @@ export default function Reports() {
 
             <div className="mt-6">
               <Pagination
-                currentPage={safePage}
+                currentPage={currentPage}
                 totalPages={totalPages}
                 onPageChange={setCurrentPage}
-                totalItems={filteredReports.length}
+                totalItems={totalItems}
                 itemsPerPage={REPORTS_PER_PAGE}
               />
             </div>

@@ -6,6 +6,13 @@ const styles: Record<ReportStatus, string> = {
   Draft: "bg-gray-100 text-gray-600",
 };
 
+export function mapBackendStatus(status: string): ReportStatus {
+  const s = status.toUpperCase();
+  if (s === "COMPLETED") return "Completed";
+  if (s === "DRAFT") return "Draft";
+  return "Pending";
+}
+
 export default function StatusBadge({ status }: { status: ReportStatus }) {
   return (
     <span
