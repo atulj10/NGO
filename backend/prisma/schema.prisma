@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum ReportStatus {
+  DRAFT
+  COMPLETED
+}
+
+enum AttachmentType {
+  MEDIA
+  SOCIAL_LINK
+}
+
+model Admin {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("admins")
+}
+
+model Event {
+  id          String   @id @default(uuid())
+  name        String
+  category    String
+  description String?
+  location    String
+  date        DateTime
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  report Report?
+
+  @@map("events")
+}
+
+model Report {
+  id        String       @id @default(uuid())
+  eventId   String       @unique @map("event_id")
+  overview  String
+  status    ReportStatus @default(DRAFT)
+  createdAt DateTime     @default(now()) @map("created_at")
+  updatedAt DateTime     @updatedAt @map("updated_at")
+
+  event       Event        @relation(fields: [eventId], references: [id])
+  attachments Attachment[]
+
+  @@map("reports")
+}
+
+model Attachment {
+  id        String         @id @default(uuid())
+  reportId  String         @map("report_id")
+  url       String
+  type      AttachmentType @default(MEDIA)
+  createdAt DateTime       @default(now()) @map("created_at")
+  updatedAt DateTime       @updatedAt @map("updated_at")
+
+  report Report @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  @@map("attachments")
+}
