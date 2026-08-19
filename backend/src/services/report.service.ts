@@ -5,7 +5,7 @@ import type {
   ReportResponse,
 } from "../types/report.types.js";
 import type { PaginatedResult } from "../types/common.types.js";
-import { reportRepository, eventRepository } from "../repositories/index.js";
+import { reportRepository, eventRepository, attachmentRepository, fileStorage } from "../repositories/index.js";
 import { NotFoundError, ConflictError } from "../middleware/error.middleware.js";
 
 export class ReportService {
@@ -40,6 +40,19 @@ export class ReportService {
   async update(id: string, data: UpdateReportInput): Promise<ReportResponse> {
     await this.findById(id);
     return reportRepository.update(id, data);
+  }
+
+  async delete(id: string): Promise<void> {
+    await this.findById(id);
+
+    const attachments = await attachmentRepository.findByReportId(id);
+    for (const attachment of attachments) {
+      if (attachment.type === "MEDIA") {
+        await fileStorage.delete(attachment.url);
+      }
+    }
+
+    await reportRepository.delete(id);
   }
 
   async findRecent(limit: number): Promise<ReportResponse[]> {

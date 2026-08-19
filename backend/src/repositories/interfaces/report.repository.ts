@@ -15,4 +15,5 @@ export interface ReportRepository {
   update(id: string, data: UpdateReportInput): Promise<ReportResponse>;
   findByEventId(eventId: string): Promise<ReportResponse | null>;
   findRecent(limit: number): Promise<ReportResponse[]>;
+  delete(id: string): Promise<void>;
 }

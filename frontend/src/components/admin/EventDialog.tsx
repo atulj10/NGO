@@ -1,10 +1,8 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { getEvents } from "../../services/event.service";
-import type { ApiEvent } from "../../services/types";
-import { useEffect } from "react";
+import type { UIEvent } from "../../pages/admin/Schedule";
 
 interface EventDialogProps {
   open: boolean;
@@ -16,6 +14,7 @@ interface EventDialogProps {
     category: string;
     description: string;
   }) => void;
+  editEvent?: UIEvent | null;
 }
 
 interface FormErrors {
@@ -48,16 +47,27 @@ export default function EventDialog({
   open,
   onOpenChange,
   onSubmit,
+  editEvent,
 }: EventDialogProps) {
   const [form, setForm] = useState(emptyForm);
   const [errors, setErrors] = useState<FormErrors>({});
-  const [events, setEvents] = useState<ApiEvent[]>([]);
+
+  const isEdit = !!editEvent;
 
   useEffect(() => {
-    if (open) {
-      getEvents({ limit: 100 }).then((res) => setEvents(res.data));
+    if (open && editEvent) {
+      const dateStr = new Date(editEvent.date).toISOString().split("T")[0];
+      setForm({
+        name: editEvent.name,
+        date: dateStr,
+        location: editEvent.location,
+        category: editEvent.category,
+        description: editEvent.description,
+      });
+    } else if (open) {
+      setForm(emptyForm);
     }
-  }, [open]);
+  }, [open, editEvent]);
 
   function validate(): boolean {
     const newErrors: FormErrors = {};
@@ -109,7 +119,7 @@ export default function EventDialog({
           >
             <div className="flex items-center justify-between">
               <Dialog.Title className="font-display text-xl font-bold text-black">
-                Add New Event
+                {isEdit ? "Edit Event" : "Add New Event"}
               </Dialog.Title>
               <Dialog.Close asChild>
                 <button
@@ -222,7 +232,7 @@ export default function EventDialog({
                   type="submit"
                   className="rounded-xl bg-orange px-5 py-2.5 text-sm font-medium text-white transition hover:bg-orange-dark active:scale-[0.98]"
                 >
-                  Create Event
+                  {isEdit ? "Save Changes" : "Create Event"}
                 </button>
               </div>
             </form>

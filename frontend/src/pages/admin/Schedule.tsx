@@ -1,12 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
-import { motion } from "framer-motion";
-import { Plus, Search } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Plus, Search, Pencil, Trash2, X } from "lucide-react";
 import EventDialog from "../../components/admin/EventDialog";
-import EventDetailDialog from "../../components/admin/EventDetailDialog";
 import EventCard from "../../components/admin/EventCard";
 import Pagination from "../../components/admin/Pagination";
 import Toast from "../../components/admin/Toast";
-import { getEvents, createEvent } from "../../services/event.service";
+import { getEvents, createEvent, updateEvent, deleteEvent } from "../../services/event.service";
 import type { ApiEvent } from "../../services/types";
 
 const EVENTS_PER_PAGE = 8;
@@ -49,8 +48,8 @@ export default function Schedule() {
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [dateFilter, setDateFilter] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [detailEvent, setDetailEvent] = useState<UIEvent | null>(null);
-  const [detailOpen, setDetailOpen] = useState(false);
+  const [editEvent, setEditEvent] = useState<UIEvent | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<UIEvent | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -118,9 +117,53 @@ export default function Schedule() {
     }
   }
 
-  function openDetail(event: UIEvent) {
-    setDetailEvent(event);
-    setDetailOpen(true);
+  async function handleUpdateEvent(newEvent: {
+    name: string;
+    date: string;
+    location: string;
+    category: string;
+    description: string;
+  }) {
+    if (!editEvent) return;
+    try {
+      await updateEvent(editEvent.id, {
+        name: newEvent.name,
+        category: newEvent.category,
+        description: newEvent.description || undefined,
+        location: newEvent.location,
+        date: new Date(newEvent.date).toISOString(),
+      });
+      setEditEvent(null);
+      setDialogOpen(false);
+      setToast("Event updated successfully.");
+      fetchEvents();
+    } catch {
+      setToast("Failed to update event.");
+    }
+  }
+
+  async function handleDeleteEvent() {
+    if (!deleteConfirm) return;
+    try {
+      await deleteEvent(deleteConfirm.id);
+      setDeleteConfirm(null);
+      setToast("Event deleted successfully.");
+      fetchEvents();
+    } catch {
+      setToast("Failed to delete event.");
+    }
+  }
+
+  function openEdit(event: UIEvent) {
+    setEditEvent(event);
+    setDialogOpen(true);
+  }
+
+  function handleDialogClose(open: boolean) {
+    if (!open) {
+      setEditEvent(null);
+    }
+    setDialogOpen(open);
   }
 
   return (
@@ -219,6 +262,7 @@ export default function Schedule() {
                     <th className="px-6 py-4">Date</th>
                     <th className="px-6 py-4">Location</th>
                     <th className="px-6 py-4">Category</th>
+                    <th className="px-6 py-4 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
@@ -228,8 +272,7 @@ export default function Schedule() {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ delay: i * 0.03 }}
-                      className="cursor-pointer transition hover:bg-gray-50/50"
-                      onClick={() => openDetail(event)}
+                      className="transition hover:bg-gray-50/50"
                     >
                       <td className="px-6 py-4 text-sm font-medium text-black">
                         {event.name}
@@ -245,6 +288,30 @@ export default function Schedule() {
                           {event.category}
                         </span>
                       </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openEdit(event);
+                            }}
+                            className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition hover:bg-gray-100 hover:text-gray-600"
+                            title="Edit event"
+                          >
+                            <Pencil size={14} />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setDeleteConfirm(event);
+                            }}
+                            className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition hover:bg-red-50 hover:text-red-500"
+                            title="Delete event"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </td>
                     </motion.tr>
                   ))}
                 </tbody>
@@ -258,10 +325,25 @@ export default function Schedule() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05 }}
-                  onClick={() => openDetail(event)}
                   className="cursor-pointer"
                 >
                   <EventCard event={event} />
+                  <div className="mt-2 flex justify-end gap-2 px-2">
+                    <button
+                      onClick={() => openEdit(event)}
+                      className="inline-flex items-center gap-1 rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600 transition hover:bg-gray-50"
+                    >
+                      <Pencil size={12} />
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => setDeleteConfirm(event)}
+                      className="inline-flex items-center gap-1 rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-500 transition hover:bg-red-50"
+                    >
+                      <Trash2 size={12} />
+                      Delete
+                    </button>
+                  </div>
                 </motion.div>
               ))}
             </div>
@@ -281,17 +363,65 @@ export default function Schedule() {
 
       <EventDialog
         open={dialogOpen}
-        onOpenChange={setDialogOpen}
-        onSubmit={handleCreateEvent}
-      />
-
-      <EventDetailDialog
-        event={detailEvent}
-        open={detailOpen}
-        onOpenChange={setDetailOpen}
+        onOpenChange={handleDialogClose}
+        onSubmit={editEvent ? handleUpdateEvent : handleCreateEvent}
+        editEvent={editEvent}
       />
 
       {toast && <Toast message={toast} onClose={() => setToast(null)} />}
+
+      <AnimatePresence>
+        {deleteConfirm && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+            onClick={() => setDeleteConfirm(null)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-sm rounded-3xl border border-gray-100 bg-white p-6 shadow-xl"
+            >
+              <div className="flex items-center justify-between">
+                <h3 className="font-display text-lg font-bold text-black">
+                  Delete Event
+                </h3>
+                <button
+                  onClick={() => setDeleteConfirm(null)}
+                  className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition hover:bg-gray-100 hover:text-gray-600"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+              <p className="mt-3 text-sm text-gray-500">
+                Are you sure you want to delete{" "}
+                <span className="font-medium text-black">
+                  {deleteConfirm.name}
+                </span>
+                ? This action cannot be undone.
+              </p>
+              <div className="mt-6 flex justify-end gap-3">
+                <button
+                  onClick={() => setDeleteConfirm(null)}
+                  className="rounded-xl border border-gray-200 px-5 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDeleteEvent}
+                  className="rounded-xl bg-red-500 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-red-600 active:scale-[0.98]"
+                >
+                  Delete
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

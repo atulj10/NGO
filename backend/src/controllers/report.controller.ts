@@ -103,3 +103,17 @@ export async function getCompletedReports(
     next(err);
   }
 }
+
+export async function deleteReport(
+  req: Request<{ id: string }>,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const { id } = req.params;
+    await reportService.delete(id);
+    sendSuccess(res, null, "Report deleted successfully");
+  } catch (err) {
+    next(err);
+  }
+}

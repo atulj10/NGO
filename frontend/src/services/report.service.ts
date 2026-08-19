@@ -54,3 +54,24 @@ export async function getAttachments(
   );
   return data;
 }
+
+export async function updateReport(
+  id: string,
+  payload: {
+    overview?: string;
+    status?: "DRAFT" | "COMPLETED";
+  }
+): Promise<ApiResponse<ApiReport>> {
+  const { data } = await api.patch<ApiResponse<ApiReport>>(`/reports/${id}`, payload);
+  return data;
+}
+
+export async function deleteReport(id: string): Promise<ApiResponse<null>> {
+  const { data } = await api.delete<ApiResponse<null>>(`/reports/${id}`);
+  return data;
+}
+
+export async function deleteAttachment(id: string): Promise<ApiResponse<null>> {
+  const { data } = await api.delete<ApiResponse<null>>(`/attachments/${id}`);
+  return data;
+}

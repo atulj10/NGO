@@ -202,4 +202,8 @@ export class PrismaReportRepository implements ReportRepository {
     });
     return reports.map((r) => toReportResponse(r));
   }
+
+  async delete(id: string): Promise<void> {
+    await prisma.report.delete({ where: { id } });
+  }
 }

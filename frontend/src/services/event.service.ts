@@ -34,3 +34,22 @@ export async function createEvent(eventData: {
   const { data } = await api.post<ApiResponse<ApiEvent>>("/events", eventData);
   return data;
 }
+
+export async function updateEvent(
+  id: string,
+  eventData: {
+    name?: string;
+    category?: string;
+    description?: string;
+    location?: string;
+    date?: string;
+  }
+): Promise<ApiResponse<ApiEvent>> {
+  const { data } = await api.patch<ApiResponse<ApiEvent>>(`/events/${id}`, eventData);
+  return data;
+}
+
+export async function deleteEvent(id: string): Promise<ApiResponse<null>> {
+  const { data } = await api.delete<ApiResponse<null>>(`/events/${id}`);
+  return data;
+}

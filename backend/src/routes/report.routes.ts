@@ -4,6 +4,7 @@ import {
   getReport,
   getReports,
   updateReport,
+  deleteReport,
 } from "../controllers/report.controller.js";
 import { uploadAttachment, getAttachments } from "../controllers/attachment.controller.js";
 import { uploadSingle } from "../middleware/upload.middleware.js";
@@ -14,6 +15,7 @@ router.get("/", getReports);
 router.post("/", createReport);
 router.get("/:id", getReport);
 router.patch("/:id", updateReport);
+router.delete("/:id", deleteReport);
 
 // Attachments nested under reports
 router.post("/:reportId/attachments", uploadSingle, uploadAttachment);

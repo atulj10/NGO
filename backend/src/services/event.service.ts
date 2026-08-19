@@ -1,6 +1,6 @@
 import type { CreateEventData, UpdateEventData, EventQueryOptions, EventResponse } from "../types/event.types.js";
 import type { PaginatedResult } from "../types/common.types.js";
-import { eventRepository } from "../repositories/index.js";
+import { eventRepository, reportRepository, attachmentRepository, fileStorage } from "../repositories/index.js";
 import { NotFoundError } from "../middleware/error.middleware.js";
 
 export class EventService {
@@ -21,6 +21,22 @@ export class EventService {
   async update(id: string, data: UpdateEventData): Promise<EventResponse> {
     await this.findById(id);
     return eventRepository.update(id, data);
+  }
+
+  async delete(id: string): Promise<void> {
+    const event = await this.findById(id);
+
+    if (event.report) {
+      const attachments = await attachmentRepository.findByReportId(event.report.id);
+      for (const attachment of attachments) {
+        if (attachment.type === "MEDIA") {
+          await fileStorage.delete(attachment.url);
+        }
+      }
+      await reportRepository.delete(event.report.id);
+    }
+
+    await eventRepository.delete(id);
   }
 
   async countUpcoming(): Promise<number> {

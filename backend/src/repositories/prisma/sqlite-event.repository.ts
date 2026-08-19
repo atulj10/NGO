@@ -187,4 +187,8 @@ export class PrismaEventRepository implements EventRepository {
     });
     return events.map((e) => toEventResponse(e));
   }
+
+  async delete(id: string): Promise<void> {
+    await prisma.event.delete({ where: { id } });
+  }
 }

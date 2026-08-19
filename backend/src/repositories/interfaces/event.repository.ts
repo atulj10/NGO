@@ -16,4 +16,5 @@ export interface EventRepository {
   countThisMonth(): Promise<number>;
   countByMonth(): Promise<{ month: string; count: number }[]>;
   findUpcoming(limit: number): Promise<EventResponse[]>;
+  delete(id: string): Promise<void>;
 }

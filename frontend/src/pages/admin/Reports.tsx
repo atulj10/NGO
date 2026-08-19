@@ -1,12 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
-import { motion } from "framer-motion";
-import { Plus, Search } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Plus, Search, Pencil, Trash2, X } from "lucide-react";
 import ReportDialog from "../../components/admin/ReportDialog";
 import ReportDetailDialog from "../../components/admin/ReportDetailDialog";
 import StatusBadge, { mapBackendStatus } from "../../components/admin/StatusBadge";
 import Pagination from "../../components/admin/Pagination";
 import Toast from "../../components/admin/Toast";
-import { getReports, createReport, uploadAttachment } from "../../services/report.service";
+import { getReports, createReport, uploadAttachment, updateReport, deleteReport } from "../../services/report.service";
 import { getEvents } from "../../services/event.service";
 import type { ApiReport, ApiEvent } from "../../services/types";
 
@@ -61,6 +61,8 @@ export default function Reports() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [editReport, setEditReport] = useState<UIReport | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<UIReport | null>(null);
   const [detailReport, setDetailReport] = useState<UIReport | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
@@ -132,6 +134,52 @@ export default function Reports() {
     } catch {
       setToast("Failed to create report.");
     }
+  }
+
+  async function handleUpdateReport(payload: {
+    eventId: string;
+    summary: string;
+    files: File[];
+    socialLinks: string[];
+    status: "DRAFT" | "COMPLETED";
+  }) {
+    if (!editReport) return;
+    try {
+      await updateReport(editReport.id, {
+        overview: payload.summary,
+        status: payload.status,
+      });
+      setEditReport(null);
+      setDialogOpen(false);
+      setToast("Report updated successfully.");
+      fetchReports();
+    } catch {
+      setToast("Failed to update report.");
+    }
+  }
+
+  async function handleDeleteReport() {
+    if (!deleteConfirm) return;
+    try {
+      await deleteReport(deleteConfirm.id);
+      setDeleteConfirm(null);
+      setToast("Report deleted successfully.");
+      fetchReports();
+    } catch {
+      setToast("Failed to delete report.");
+    }
+  }
+
+  function openEdit(report: UIReport) {
+    setEditReport(report);
+    setDialogOpen(true);
+  }
+
+  function handleDialogClose(open: boolean) {
+    if (!open) {
+      setEditReport(null);
+    }
+    setDialogOpen(open);
   }
 
   function openDetail(report: UIReport) {
@@ -257,6 +305,7 @@ export default function Reports() {
                     <th className="px-6 py-4">Social</th>
                     <th className="px-6 py-4">Status</th>
                     <th className="px-6 py-4">Date</th>
+                    <th className="px-6 py-4 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
@@ -266,26 +315,67 @@ export default function Reports() {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ delay: i * 0.03 }}
-                      className="cursor-pointer transition hover:bg-gray-50/50"
-                      onClick={() => openDetail(report)}
+                      className="transition hover:bg-gray-50/50"
                     >
-                      <td className="px-6 py-4 text-sm font-medium text-black">
+                      <td
+                        className="cursor-pointer px-6 py-4 text-sm font-medium text-black"
+                        onClick={() => openDetail(report)}
+                      >
                         {report.eventName}
                       </td>
-                      <td className="max-w-[200px] truncate px-6 py-4 text-sm text-gray-500">
+                      <td
+                        className="max-w-[200px] cursor-pointer truncate px-6 py-4 text-sm text-gray-500"
+                        onClick={() => openDetail(report)}
+                      >
                         {report.summary}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-500">
+                      <td
+                        className="cursor-pointer px-6 py-4 text-sm text-gray-500"
+                        onClick={() => openDetail(report)}
+                      >
                         {report.mediaCount} file{report.mediaCount !== 1 ? "s" : ""}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-500">
+                      <td
+                        className="cursor-pointer px-6 py-4 text-sm text-gray-500"
+                        onClick={() => openDetail(report)}
+                      >
                         {report.socialLinksCount} link{report.socialLinksCount !== 1 ? "s" : ""}
                       </td>
-                      <td className="px-6 py-4">
+                      <td
+                        className="cursor-pointer px-6 py-4"
+                        onClick={() => openDetail(report)}
+                      >
                         <StatusBadge status={report.status} />
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-500">
+                      <td
+                        className="cursor-pointer px-6 py-4 text-sm text-gray-500"
+                        onClick={() => openDetail(report)}
+                      >
                         {formatDate(report.createdAt)}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openEdit(report);
+                            }}
+                            className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition hover:bg-gray-100 hover:text-gray-600"
+                            title="Edit report"
+                          >
+                            <Pencil size={14} />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setDeleteConfirm(report);
+                            }}
+                            className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition hover:bg-red-50 hover:text-red-500"
+                            title="Delete report"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
                       </td>
                     </motion.tr>
                   ))}
@@ -323,6 +413,22 @@ export default function Reports() {
                     </div>
                     <StatusBadge status={report.status} />
                   </div>
+                  <div className="mt-3 flex justify-end gap-2">
+                    <button
+                      onClick={() => openEdit(report)}
+                      className="inline-flex items-center gap-1 rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600 transition hover:bg-gray-50"
+                    >
+                      <Pencil size={12} />
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => setDeleteConfirm(report)}
+                      className="inline-flex items-center gap-1 rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-500 transition hover:bg-red-50"
+                    >
+                      <Trash2 size={12} />
+                      Delete
+                    </button>
+                  </div>
                 </motion.div>
               ))}
             </div>
@@ -342,9 +448,10 @@ export default function Reports() {
 
       <ReportDialog
         open={dialogOpen}
-        onOpenChange={setDialogOpen}
-        onSubmit={handleCreateReport}
+        onOpenChange={handleDialogClose}
+        onSubmit={editReport ? handleUpdateReport : handleCreateReport}
         events={events}
+        editReport={editReport}
       />
 
       <ReportDetailDialog
@@ -354,6 +461,59 @@ export default function Reports() {
       />
 
       {toast && <Toast message={toast} onClose={() => setToast(null)} />}
+
+      <AnimatePresence>
+        {deleteConfirm && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+            onClick={() => setDeleteConfirm(null)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-sm rounded-3xl border border-gray-100 bg-white p-6 shadow-xl"
+            >
+              <div className="flex items-center justify-between">
+                <h3 className="font-display text-lg font-bold text-black">
+                  Delete Report
+                </h3>
+                <button
+                  onClick={() => setDeleteConfirm(null)}
+                  className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition hover:bg-gray-100 hover:text-gray-600"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+              <p className="mt-3 text-sm text-gray-500">
+                Are you sure you want to delete the report for{" "}
+                <span className="font-medium text-black">
+                  {deleteConfirm.eventName}
+                </span>
+                ? This action cannot be undone.
+              </p>
+              <div className="mt-6 flex justify-end gap-3">
+                <button
+                  onClick={() => setDeleteConfirm(null)}
+                  className="rounded-xl border border-gray-200 px-5 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDeleteReport}
+                  className="rounded-xl bg-red-500 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-red-600 active:scale-[0.98]"
+                >
+                  Delete
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

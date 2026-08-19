@@ -1,8 +1,9 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { X, Upload, Link as LinkIcon, Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import type { ApiEvent } from "../../services/types";
+import type { UIReport } from "../../pages/admin/Reports";
 
 interface ReportDialogProps {
   open: boolean;
@@ -15,6 +16,7 @@ interface ReportDialogProps {
     status: "DRAFT" | "COMPLETED";
   }) => void;
   events: ApiEvent[];
+  editReport?: UIReport | null;
 }
 
 interface FormErrors {
@@ -32,6 +34,7 @@ export default function ReportDialog({
   onOpenChange,
   onSubmit,
   events,
+  editReport,
 }: ReportDialogProps) {
   const [eventId, setEventId] = useState("");
   const [summary, setSummary] = useState("");
@@ -39,6 +42,21 @@ export default function ReportDialog({
   const [socialLinks, setSocialLinks] = useState<string[]>([""]);
   const [status, setStatus] = useState<"DRAFT" | "COMPLETED">("DRAFT");
   const [errors, setErrors] = useState<FormErrors>({});
+
+  const isEdit = !!editReport;
+
+  useEffect(() => {
+    if (open && editReport) {
+      setEventId(editReport.eventId);
+      setSummary(editReport.summary);
+      setStatus(editReport.status === "Completed" ? "COMPLETED" : "DRAFT");
+      setSocialLinks(
+        editReport.socialLinks.length > 0 ? [...editReport.socialLinks] : [""]
+      );
+    } else if (open) {
+      resetForm();
+    }
+  }, [open, editReport]);
 
   function validate(): boolean {
     const newErrors: FormErrors = {};
@@ -125,7 +143,7 @@ export default function ReportDialog({
           >
             <div className="flex items-center justify-between">
               <Dialog.Title className="font-display text-xl font-bold text-black">
-                Add New Report
+                {isEdit ? "Edit Report" : "Add New Report"}
               </Dialog.Title>
               <Dialog.Close asChild>
                 <button
@@ -146,7 +164,8 @@ export default function ReportDialog({
                 <select
                   value={eventId}
                   onChange={(e) => setEventId(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-black outline-none transition focus:border-orange focus:ring-2 focus:ring-orange/20"
+                  disabled={isEdit}
+                  className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-black outline-none transition focus:border-orange focus:ring-2 focus:ring-orange/20 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500"
                 >
                   <option value="">Select an event</option>
                   {events.map((ev) => (
@@ -176,55 +195,57 @@ export default function ReportDialog({
                 )}
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Media
-                </label>
-                <label className="mt-1 flex cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-200 px-4 py-6 text-sm text-gray-500 transition hover:border-orange hover:text-orange">
-                  <Upload size={18} />
-                  <span>Click to upload photos or videos</span>
-                  <input
-                    type="file"
-                    accept="image/*,video/*"
-                    multiple
-                    onChange={handleFileSelect}
-                    className="hidden"
-                  />
-                </label>
-                {media.length > 0 && (
-                  <div className="mt-3 grid grid-cols-3 gap-2">
-                    {media.map((item, i) => (
-                      <div
-                        key={i}
-                        className="group relative overflow-hidden rounded-xl border border-gray-100"
-                      >
-                        {item.file.type.startsWith("image/") ? (
-                          <img
-                            src={item.preview}
-                            alt={item.file.name}
-                            className="h-20 w-full object-cover"
-                          />
-                        ) : (
-                          <div className="flex h-20 w-full items-center justify-center bg-gray-100 text-xs text-gray-500">
-                            Video
-                          </div>
-                        )}
-                        <button
-                          type="button"
-                          onClick={() => removeMedia(i)}
-                          className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-white opacity-0 transition group-hover:opacity-100"
-                          aria-label={`Remove ${item.file.name}`}
+              {!isEdit && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Media
+                  </label>
+                  <label className="mt-1 flex cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-200 px-4 py-6 text-sm text-gray-500 transition hover:border-orange hover:text-orange">
+                    <Upload size={18} />
+                    <span>Click to upload photos or videos</span>
+                    <input
+                      type="file"
+                      accept="image/*,video/*"
+                      multiple
+                      onChange={handleFileSelect}
+                      className="hidden"
+                    />
+                  </label>
+                  {media.length > 0 && (
+                    <div className="mt-3 grid grid-cols-3 gap-2">
+                      {media.map((item, i) => (
+                        <div
+                          key={i}
+                          className="group relative overflow-hidden rounded-xl border border-gray-100"
                         >
-                          <X size={10} />
-                        </button>
-                        <p className="truncate px-1.5 py-1 text-[10px] text-gray-500">
-                          {item.file.name}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+                          {item.file.type.startsWith("image/") ? (
+                            <img
+                              src={item.preview}
+                              alt={item.file.name}
+                              className="h-20 w-full object-cover"
+                            />
+                          ) : (
+                            <div className="flex h-20 w-full items-center justify-center bg-gray-100 text-xs text-gray-500">
+                              Video
+                            </div>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => removeMedia(i)}
+                            className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-white opacity-0 transition group-hover:opacity-100"
+                            aria-label={`Remove ${item.file.name}`}
+                          >
+                            <X size={10} />
+                          </button>
+                          <p className="truncate px-1.5 py-1 text-[10px] text-gray-500">
+                            {item.file.name}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
 
               <div>
                 <label className="block text-sm font-medium text-gray-700">
@@ -292,7 +313,7 @@ export default function ReportDialog({
                   type="submit"
                   className="rounded-xl bg-orange px-5 py-2.5 text-sm font-medium text-white transition hover:bg-orange-dark active:scale-[0.98]"
                 >
-                  Create Report
+                  {isEdit ? "Save Changes" : "Create Report"}
                 </button>
               </div>
             </form>
